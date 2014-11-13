@@ -32,5 +32,5 @@ bool BaseLayer::init()
 
 int BaseLayer::getUniqueTag()
 {
-    return tagCounter++;
+    return m_tagCounter++;
 }

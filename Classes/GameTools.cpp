@@ -17,11 +17,11 @@ GameTools::~GameTools() {};
 
 void GameTools::init()
 {
+    MAX_ZORDER = 99;
+    
     auto director = Director::getInstance();
     
     Size winSize = director->getWinSize();
-    
-    log("winSize.width: %f", winSize.width);
     
     Size designSize = Size(Vec2(640, 960));
     
@@ -45,8 +45,40 @@ void GameTools::setDesignSize(cocos2d::Size designSize) { DESIGN_SIZE = designSi
 double GameTools::getScaleRatio() { return SCALE_RATIO; }
 void GameTools::setScaleRatio(double scaleRatio) { SCALE_RATIO = scaleRatio; }
 
-double GameTools::getBaseY() { return BASE_Y; }
-void GameTools::setBaseY(double baseY) { BASE_Y = baseY; }
+double GameTools::getBaseY()
+{
+    return BASE_Y;
+}
+
+void GameTools::setBaseY(double baseY)
+{
+    BASE_Y = baseY;
+}
+
+int GameTools::getPaddingLR()
+{
+    return PADDING_LR;
+}
+
+int GameTools::getPaddingTB()
+{
+    return PADDING_TB;
+}
+
+int GameTools::getMaxCol()
+{
+    return MAX_COL;
+}
+
+int GameTools::getMaxRow()
+{
+    return MAX_ROW;
+}
+
+int GameTools::getMaxZOrder()
+{
+    return MAX_ZORDER;
+}
 
 void GameTools::addImageCache()
 {
