@@ -5,12 +5,19 @@
 //  Created by meiyuchen on 14-11-12.
 //
 //
+#include <string>
+#include <ctime>
+
 #include "cocos2d.h"
+#include "extensions/cocos-ext.h"
+
+#include "config.h"
 #include "GameLayer.h"
 #include "PauseLayer.h"
 #include "GameTools.h"
-#include "config.h"
+#include "Ball.h"
 
+USING_NS_CC_EXT;
 USING_NS_CC;
 USING_NS_GC;
 
@@ -18,24 +25,36 @@ extern GameTools GT;
 
 bool GameLayer::init()
 {
-    if ( !Layer::init() )
+    if (!Layer::init())
     {
         return false;
     }
     
+    MAX_COL = 6;
+    MAX_ROW = (GT.getBaseY() - 380) / 70;
+    PADDING_LR = 46;
+    PADDING_TB = 42;
+    
     MENU_TAG = getUniqueTag();
     BOARD_TAG = getUniqueTag();
+    GRADE_LABEL_TAG = getUniqueTag();
     
     auto bg = Sprite::create(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
     
-    // 分数
+    // 分数图片
     auto grade = Sprite::createWithSpriteFrameName(s_grade_txt);
     grade->setAnchorPoint(Vec2::ZERO);
     grade->setPosition(Vec2(40, GT.getBaseY() - 70));
     this->addChild(grade);
+    
+    // 分数Label
+    auto gradeLabel = LabelTTF::create("999", "Arial", 50);
+    gradeLabel->setColor(Color3B(0, 0, 0));
+    gradeLabel->setPosition(Vec2(100, GT.getBaseY() - 120));
+    this->addChild(gradeLabel, 0, GRADE_LABEL_TAG);
     
     // 下回出现
     auto next = Sprite::createWithSpriteFrameName(s_next_txt);
@@ -54,18 +73,15 @@ bool GameLayer::init()
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 0, MENU_TAG);
     
-//    Scale9Sprite 游戏面板 无法编译通过
-//    auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(90, 90, 400, 500));
-//    board->setContentSize(Size(584, 732));
-//    board->setAnchorPoint(Vec2::ZERO);
-//    board->setPosition(Vec2::ZERO);
-//    this->addChild(board);
-    
-    auto board = Sprite::create(s_board);
-    board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 12));
+    auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(0, 0, 584, 732));
+    board->setContentSize(Size(584, GT.getBaseY() - 220));
+    board->setAnchorPoint(Vec2(0.5, 0));
+    board->setPosition(Vec2(GT.getDesignSize().width / 2, 60));
     this->addChild(board, 0, BOARD_TAG);
     
-    createRects();
+//    createRects();
+    
+    initBeginBalls();
     
     EventDispatcher *eventDispatcher = Director::getInstance()->getEventDispatcher();
     auto listener = EventListenerTouchOneByOne::create();
@@ -105,7 +121,7 @@ void GameLayer::pauseCallBack(Ref *pSender)
     auto scene = Director::getInstance()->getRunningScene();
     auto layer = PauseLayer::create();
     
-    scene->addChild(layer, GT.getMaxZOrder(), GAME_LAYER);
+    scene->addChild(layer, GT.getMaxZOrder(), PAUSE_LAYER);
     
 }
 
@@ -113,18 +129,47 @@ void GameLayer::createRects()
 {
     auto board = this->getChildByTag(BOARD_TAG);
     auto boardPos = board->getPosition();
+    auto batchNode = SpriteBatchNode::create(s_repeat_images, MAX_ROW * MAX_COL * 4);
+    batchNode->setAnchorPoint(Vec2::ZERO);
+    batchNode->setPosition(Vec2::ZERO);
+    board->addChild(batchNode);
     
-    for (int i = 0; i < GT.getMaxCol(); i++)
+    for (int i = 0; i < MAX_COL; i++)
     {
-        for (int j = 0; j < GT.getMaxRow(); j++)
+        for (int j = 0; j < MAX_ROW; j++)
         {
-            auto rect = Sprite::createWithSpriteFrameName(s_board_rect);
+            auto rect = Sprite::createWithTexture(batchNode->getTexture(), Rect(0, 0, 80, 80));
             Size size = rect->getContentSize();
             rect->setPosition(Vec2(
-                GT.getPaddingLR() + i * size.width + size.width / 2,
-                GT.getPaddingTB() + j * size.height + size.height / 2
+                PADDING_LR + i * size.width + size.width / 2,
+                PADDING_TB + j * size.height + size.height / 2
             ));
-            board->addChild(rect);
+            batchNode->addChild(rect);
+        }
+    }
+}
+
+void GameLayer::initBeginBalls()
+{
+    auto board = this->getChildByTag(BOARD_TAG);
+    
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            srand((unsigned)time(0));
+            int n = rand() % 10;
+            
+            if (n > 5)
+            {
+                auto ball = Ball::create();
+                Size size = Size(Vec2(80, 80));
+                ball->setPosition(Vec2(
+                    PADDING_LR + i * size.width + size.width / 2,
+                    PADDING_TB + j * size.height + size.height / 2
+                ));
+                board->addChild(ball);
+            }
         }
     }
 }

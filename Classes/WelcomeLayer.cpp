@@ -56,23 +56,26 @@ bool WelcomeLayer::init()
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
     
-    auto logo = Sprite::createWithSpriteFrameName(s_logo);
-    logo->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 150));
-    this->addChild(logo);
+    auto banner = Sprite::createWithSpriteFrameName(s_banner);
+    banner->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 150));
+    this->addChild(banner);
     
     auto startBtn = Sprite::createWithSpriteFrameName(s_start_btn);
-    auto startItem = MenuItemSprite::create(startBtn, startBtn,
+    auto startBtnActive = Sprite::createWithSpriteFrameName(s_start_btn_a);
+    auto startItem = MenuItemSprite::create(startBtn, startBtnActive,
                                             CC_CALLBACK_1(WelcomeLayer::startCallBack, this));
     startItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 400));
     
     auto introBtn = Sprite::createWithSpriteFrameName(s_intro_btn);
-    auto introItem = MenuItemSprite::create(introBtn, introBtn,
+    auto introBtnActive = Sprite::createWithSpriteFrameName(s_intro_btn_a);
+    auto introItem = MenuItemSprite::create(introBtn, introBtnActive,
                                             CC_CALLBACK_1(WelcomeLayer::introCallBack, this));
     introItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 530));
     
     auto quitBtn = Sprite::createWithSpriteFrameName(s_quit_btn);
-    auto quitItem = MenuItemSprite::create(quitBtn, quitBtn,
-                                            CC_CALLBACK_1(WelcomeLayer::quitCallBack, this));
+    auto quitBtnActive = Sprite::createWithSpriteFrameName(s_quit_btn_a);
+    auto quitItem = MenuItemSprite::create(quitBtn, quitBtnActive,
+                                           CC_CALLBACK_1(WelcomeLayer::quitCallBack, this));
     quitItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 660));
     
     auto settingSprite = Sprite::createWithSpriteFrameName(s_setting_btn);

@@ -1,0 +1,50 @@
+//
+//  Ball.h
+//  Ball
+//
+//  Created by meiyuchen on 14-11-13.
+//
+//
+
+#ifndef __Ball__Ball__
+#define __Ball__Ball__
+
+#include <string>
+#include "cocos2d.h"
+
+enum color {blue, yellow, red, green};
+
+class Ball : public cocos2d::Sprite
+{
+private:
+    int MAX_COLOR_TYPES = 3;
+    
+    int EYE_TAG;
+    
+    color _color;
+    int _col;
+    int _row;
+    
+public:
+    color getColor();
+    void setColor(color c);
+    
+    int getRow();
+    void setRow(int row);
+    
+    int getCol();
+    void setCol(int col);
+    
+    color getRandomColor(); // 生成随机颜色
+    
+    virtual bool init();
+    virtual bool init(const color ballColor);
+    
+    std::string getBallFrame();
+    std::string getBallFrame(const color ballColor);
+    
+    static Ball *create();
+    static Ball *create(const color ballColor);
+};
+
+#endif /* defined(__Ball__Ball__) */

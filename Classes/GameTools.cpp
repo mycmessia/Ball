@@ -5,9 +5,9 @@
 //  Created by meiyuchen on 14-11-11.
 //
 //
-
-#include "GameTools.h"
 #include "cocos2d.h"
+#include "config.h"
+#include "GameTools.h"
 
 USING_NS_CC;
 
@@ -55,26 +55,6 @@ void GameTools::setBaseY(double baseY)
     BASE_Y = baseY;
 }
 
-int GameTools::getPaddingLR()
-{
-    return PADDING_LR;
-}
-
-int GameTools::getPaddingTB()
-{
-    return PADDING_TB;
-}
-
-int GameTools::getMaxCol()
-{
-    return MAX_COL;
-}
-
-int GameTools::getMaxRow()
-{
-    return MAX_ROW;
-}
-
 int GameTools::getMaxZOrder()
 {
     return MAX_ZORDER;
@@ -82,5 +62,6 @@ int GameTools::getMaxZOrder()
 
 void GameTools::addImageCache()
 {
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("main_images.plist", "main_images.png");
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_main_images_plist, s_main_images);
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_repeat_images_plist, s_repeat_images);
 }

@@ -25,6 +25,12 @@ public:
     
     bool init();
     
+    void resumeCallBack(cocos2d::Ref* pSender);
+    
+    void restartCallBack(cocos2d::Ref* pSender);
+    
+    void goHomeCallBack(cocos2d::Ref* pSender);
+    
     bool onTouchBegan(cocos2d::Touch *, cocos2d::Event *);
     void onTouchMoved(cocos2d::Touch *, cocos2d::Event *);
     void onTouchEnded(cocos2d::Touch *, cocos2d::Event *);

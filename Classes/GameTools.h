@@ -29,11 +29,6 @@ private:
     int TOUCH_PRIORITY_9;
     int TOUCH_PRIORITY_8;
     
-    int MAX_COL = 6;
-    int MAX_ROW = 7;
-    int PADDING_LR = 45;
-    int PADDING_TB = 70;
-    
     int MAX_ZORDER = 99;
     
     long record;
@@ -55,11 +50,6 @@ public:
     
     double getBaseY();
     void setBaseY(double baseY);
-    
-    int getMaxCol();
-    int getMaxRow();
-    int getPaddingTB();
-    int getPaddingLR();
     
     int getMaxZOrder();
     
