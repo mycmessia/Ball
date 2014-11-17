@@ -12,7 +12,7 @@
 #include <string>
 #include "cocos2d.h"
 
-#define MAX_COLOR_TYPES 3
+#define MAX_COLOR_TYPES 4
 
 enum color
 {

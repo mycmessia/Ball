@@ -67,3 +67,8 @@ void GameTools::addImageCache()
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_main_images_plist, s_main_images);
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_repeat_images_plist, s_repeat_images);
 }
+
+double GameTools::getMoveDis()
+{
+    return MOVE_DIS;
+}

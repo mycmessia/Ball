@@ -20,7 +20,7 @@ private:
     
     Size DESIGN_SIZE;
     
-    double MOVE_DIS;
+    double MOVE_DIS = 8.0;
     
     double SCALE_RATIO;
     
@@ -50,6 +50,8 @@ public:
     
     double getBaseY();
     void setBaseY(double baseY);
+    
+    double getMoveDis();
     
     int getMaxZOrder();
     

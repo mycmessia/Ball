@@ -30,12 +30,6 @@ bool GameLayer::init()
         return false;
     }
     
-    MAX_COL = 7;
-    MAX_ROW = 9;
-//    MAX_ROW = (GT.getBaseY() - 380) / 70;
-    PADDING_LR = 48;
-    PADDING_TB = 48;
-    
     MENU_TAG = getUniqueTag();
     BOARD_TAG = getUniqueTag();
     GRADE_LABEL_TAG = getUniqueTag();
@@ -97,9 +91,50 @@ bool GameLayer::init()
     return true;
 }
 
+void GameLayer::update()
+{
+    isCanTouch = true;
+    
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            if (matrix[i][j]->sprite && matrix[i][j]->sprite->getNumberOfRunningActions() > 0)
+            {
+                isCanTouch = false;
+                return;
+            }
+        }
+    }}
+
 bool GameLayer::onTouchBegan(Touch *touch, Event *event)
 {
-    log("GameLayer::onTouchBegan");
+    if (!isCanTouch) return false;
+    
+    touchCol = -1;
+    touchRow = -1;
+    
+    auto board = this->getChildByTag(BOARD_TAG);
+    auto location = touch->getLocation();
+    touchStart = board->convertToNodeSpace(location);
+    
+    touchStart.x -= PADDING_LR;
+    touchStart.y -= PADDING_TB;
+    
+    Size size = Size(Vec2(70, 70));
+    touchRow = touchStart.y / size.height;
+    touchCol = touchStart.x / size.width;
+
+    if (touchRow >= MAX_ROW || touchCol >= MAX_COL ||
+        touchStart.x < 0 || touchStart.y < 0)
+    {
+        touchRow = -1;
+        touchCol = -1;
+    }
+    
+//    log("touchRow %d\n", touchRow);
+//    log("touchCol %d\n", touchCol);
+    
     return true;
 }
 
@@ -158,6 +193,10 @@ void GameLayer::initBeginBalls()
     {
         for (int j = 0; j < MAX_ROW; j++)
         {
+            matrix[i][j] = new matrixCell;
+            matrix[i][j]->sprite = nullptr;
+            matrix[i][j]->isVisited = false;
+            
             int n = rand() % 10;
             
             if(n < 2)
@@ -169,6 +208,8 @@ void GameLayer::initBeginBalls()
                     PADDING_TB + j * size.height + size.height / 2
                 ));
                 board->addChild(ball);
+                
+                matrix[i][j]->sprite = ball;
             }
         }
     }
