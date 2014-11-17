@@ -12,13 +12,19 @@
 #include <string>
 #include "cocos2d.h"
 
-enum color {blue, yellow, red, green};
+#define MAX_COLOR_TYPES 3
+
+enum color
+{
+    blue = 0,
+    yellow,
+    red,
+    green
+};
 
 class Ball : public cocos2d::Sprite
 {
 private:
-    int MAX_COLOR_TYPES = 3;
-    
     int EYE_TAG;
     
     color _color;

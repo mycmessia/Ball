@@ -30,10 +30,11 @@ bool GameLayer::init()
         return false;
     }
     
-    MAX_COL = 6;
-    MAX_ROW = (GT.getBaseY() - 380) / 70;
-    PADDING_LR = 46;
-    PADDING_TB = 42;
+    MAX_COL = 7;
+    MAX_ROW = 9;
+//    MAX_ROW = (GT.getBaseY() - 380) / 70;
+    PADDING_LR = 48;
+    PADDING_TB = 48;
     
     MENU_TAG = getUniqueTag();
     BOARD_TAG = getUniqueTag();
@@ -64,7 +65,8 @@ bool GameLayer::init()
     
     // 暂停按钮
     auto pauseSprite = Sprite::createWithSpriteFrameName(s_pause_btn);
-    auto pauseItem = MenuItemSprite::create(pauseSprite, pauseSprite,
+    auto pauseSpriteActive = Sprite::createWithSpriteFrameName(s_pause_btn_a);
+    auto pauseItem = MenuItemSprite::create(pauseSprite, pauseSpriteActive,
                                            CC_CALLBACK_1(GameLayer::pauseCallBack, this));
 	pauseItem->setAnchorPoint(Vec2::ZERO);
     pauseItem->setPosition(Vec2(GT.getDesignSize().width - 90, GT.getBaseY() - 90));
@@ -74,9 +76,8 @@ bool GameLayer::init()
     this->addChild(menu, 0, MENU_TAG);
     
     auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(0, 0, 584, 732));
-    board->setContentSize(Size(584, GT.getBaseY() - 220));
-    board->setAnchorPoint(Vec2(0.5, 0));
-    board->setPosition(Vec2(GT.getDesignSize().width / 2, 60));
+    board->setContentSize(Size(584, 732));
+    board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
     this->addChild(board, 0, BOARD_TAG);
     
 //    createRects();
@@ -157,13 +158,12 @@ void GameLayer::initBeginBalls()
     {
         for (int j = 0; j < MAX_ROW; j++)
         {
-            srand((unsigned)time(0));
             int n = rand() % 10;
             
-            if (n > 5)
+            if(n < 2)
             {
                 auto ball = Ball::create();
-                Size size = Size(Vec2(80, 80));
+                Size size = Size(Vec2(70, 70));
                 ball->setPosition(Vec2(
                     PADDING_LR + i * size.width + size.width / 2,
                     PADDING_TB + j * size.height + size.height / 2

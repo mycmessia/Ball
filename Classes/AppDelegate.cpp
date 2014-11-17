@@ -28,7 +28,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setDisplayStats(true);
 
     director->setAnimationInterval(1.0 / 60);
-    
+
     GT.init();
     
     auto scene = WelcomeLayer::createScene();

@@ -79,13 +79,15 @@ bool WelcomeLayer::init()
     quitItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 660));
     
     auto settingSprite = Sprite::createWithSpriteFrameName(s_setting_btn);
-    auto settingItem = MenuItemSprite::create(settingSprite, settingSprite,
+    auto settingSpriteActive = Sprite::createWithSpriteFrameName(s_setting_btn_a);
+    auto settingItem = MenuItemSprite::create(settingSprite, settingSpriteActive,
                                             CC_CALLBACK_1(WelcomeLayer::settingCallBack, this));
 	settingItem->setAnchorPoint(Vec2::ZERO);
     settingItem->setPosition(Vec2(GT.getDesignSize().width - 100, 30));
     
     auto rankSprite = Sprite::createWithSpriteFrameName(s_rank_btn);
-    auto rankItem = MenuItemSprite::create(rankSprite, rankSprite,
+    auto rankSpriteActive = Sprite::createWithSpriteFrameName(s_rank_btn_a);
+    auto rankItem = MenuItemSprite::create(rankSprite, rankSpriteActive,
                                            CC_CALLBACK_1(WelcomeLayer::rankCallBack, this));
 	rankItem->setAnchorPoint(Vec2::ZERO);
     rankItem->setPosition(Vec2(GT.getDesignSize().width - 200, 30));

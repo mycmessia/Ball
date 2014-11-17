@@ -46,7 +46,6 @@ void Ball::setRow(int row)
 
 color Ball::getRandomColor()
 {
-    srand((unsigned)time(0));
     return (color) (rand() % MAX_COLOR_TYPES);
 }
 

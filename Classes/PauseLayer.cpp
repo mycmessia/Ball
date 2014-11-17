@@ -46,21 +46,24 @@ bool PauseLayer::init()
     
     // 继续按钮
     auto resumeSprite = Sprite::createWithSpriteFrameName(s_resume_btn);
-    auto resumeItem = MenuItemSprite::create(resumeSprite, resumeSprite,
+    auto resumeSpriteActive = Sprite::createWithSpriteFrameName(s_resume_btn_a);
+    auto resumeItem = MenuItemSprite::create(resumeSprite, resumeSpriteActive,
                                             CC_CALLBACK_1(PauseLayer::resumeCallBack, this));
 	resumeItem->setAnchorPoint(Vec2::ZERO);
     resumeItem->setPosition(Vec2(50, 50));
     
     // 重开按钮
     auto restartSprite = Sprite::createWithSpriteFrameName(s_restart_btn);
-    auto restartItem = MenuItemSprite::create(restartSprite, restartSprite,
+    auto restartSpriteActive = Sprite::createWithSpriteFrameName(s_restart_btn_a);
+    auto restartItem = MenuItemSprite::create(restartSprite, restartSpriteActive,
                                              CC_CALLBACK_1(PauseLayer::restartCallBack, this));
 	restartItem->setAnchorPoint(Vec2::ZERO);
     restartItem->setPosition(Vec2(150, 50));
     
     // 回首页按钮
     auto goHomeSprite = Sprite::createWithSpriteFrameName(s_go_home_btn);
-    auto goHomeItem = MenuItemSprite::create(goHomeSprite, goHomeSprite,
+    auto goHomeSpriteActive= Sprite::createWithSpriteFrameName(s_go_home_btn_a);
+    auto goHomeItem = MenuItemSprite::create(goHomeSprite, goHomeSpriteActive,
                                              CC_CALLBACK_1(PauseLayer::goHomeCallBack, this));
 	goHomeItem->setAnchorPoint(Vec2::ZERO);
     goHomeItem->setPosition(Vec2(250, 50));
