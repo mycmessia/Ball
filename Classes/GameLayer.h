@@ -6,6 +6,7 @@
 //
 //
 #include "cocos2d.h"
+#include "Queue.h"
 #include "BaseLayer.h"
 #include "Ball.h"
 
@@ -38,6 +39,9 @@ private:
     int touchCol = -1;
     int touchRow = -1;
     
+    Queue queue;        // 寻路用临时队列
+    Queue path;         // 最终路线
+    
 public:
     virtual bool init();
     
@@ -48,6 +52,15 @@ public:
     void pauseCallBack(cocos2d::Ref* pSender);
     
     void initBeginBalls();      // 创建一上来就有的球
+    
+    /* 寻路相关 */
+    void visit(int col, int row);
+    void cleanPath();
+    void searchPath(pathCell start, pathCell dest);
+    void resetIsVisited();
+    
+    void ballGo();
+    void ballArrive(pathCell start, pathCell dest);
     
     bool onTouchBegan(cocos2d::Touch *, cocos2d::Event *);
     void onTouchMoved(cocos2d::Touch *, cocos2d::Event *);

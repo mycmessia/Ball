@@ -13,6 +13,7 @@
 #include "extensions/cocos-ext.h"
 
 #include "config.h"
+#include "Queue.h"
 #include "GameLayer.h"
 #include "PauseLayer.h"
 #include "GameTools.h"
@@ -128,10 +129,10 @@ bool GameLayer::onTouchBegan(Touch *touch, Event *event)
     
     auto board = this->getChildByTag(BOARD_TAG);
     touchStart = touch->getLocation();
-    log("touchStart.x %f\n", touchStart.x);
+//    log("touchStart.x %f\n", touchStart.x);
     
     auto touchBoardPos = board->convertToNodeSpace(touchStart);
-    log("touchBoardPos.x %f\n", touchBoardPos.x);
+//    log("touchBoardPos.x %f\n", touchBoardPos.x);
     
     touchBoardPos.x -= PADDING_LR;
     touchBoardPos.y -= PADDING_TB;
@@ -154,8 +155,8 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 {
     auto touchMove = touch->getLocation();
     
-    log("touchMove.x - touchStart.x: %f\n", touchMove.x - touchStart.x);
-    log("touchMove.y - touchStart.y: %f\n", touchMove.y - touchStart.y);
+//    log("touchMove.x - touchStart.x: %f\n", touchMove.x - touchStart.x);
+//    log("touchMove.y - touchStart.y: %f\n", touchMove.y - touchStart.y);
     
     if (abs(touchMove.x - touchStart.x) > GT.getMoveDis() ||
         abs(touchMove.y - touchStart.y) > GT.getMoveDis())
@@ -167,15 +168,24 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 
 void GameLayer::onTouchEnded(Touch *touch, Event *event)
 {
-    log("touchRow %d\n", touchRow);
-    log("touchCol %d\n", touchCol);
+//    log("touchRow %d\n", touchRow);
+//    log("touchCol %d\n", touchCol);
     
     if (touchRow != -1 && touchCol != -1)
     {
         // 如果点击空位置，且已经有funnyBall
         if (!matrix[touchCol][touchRow]->sprite && funnyBall)
         {
+            log("begin search path==========\n");
+            
             // funnyBall寻路
+            pathCell start = {funnyBall->getCol(), funnyBall->getRow(), -1};
+            pathCell dest = {touchCol, touchRow, -1};
+            
+            log("start col %d row %d\n", start.col, start.row);
+            log("dest col %d row %d\n", dest.col, dest.row);
+            
+            searchPath(start, dest);
         }
         else if (matrix[touchCol][touchRow]->sprite)
         {
@@ -233,6 +243,138 @@ void GameLayer::initBeginBalls()
                 
                 matrix[i][j]->sprite = ball;
             }
+        }
+    }
+}
+
+void GameLayer::visit(int col, int row)
+{
+    matrix[col][row]->isVisited = true;
+    pathCell p = {
+        col, row, queue.getHead() - 1
+    };
+    queue.enqueue(p);
+}
+
+void GameLayer::cleanPath()
+{
+    while (!path.isEmpty())
+    {
+        path.dequeue();
+    }
+    
+    while (!queue.isEmpty())
+    {
+        queue.dequeue();
+    }
+}
+
+void GameLayer::searchPath(pathCell start, pathCell dest)
+{
+    cleanPath();
+    
+    queue.enqueue(start);
+    
+    pathCell nowPos;
+    
+    while (!queue.isEmpty())
+    {
+        nowPos = queue.dequeue();
+        
+        if (nowPos.col == dest.col && nowPos.row == dest.row)
+            break;
+        
+        /* go up */
+        if (nowPos.row - 1 >= 0 &&
+            !matrix[nowPos.col][nowPos.row - 1]->sprite &&
+            matrix[nowPos.col][nowPos.row - 1]->isVisited == false)
+        {
+            visit(nowPos.col, nowPos.row - 1);
+        }
+        
+        /* down */
+        if (nowPos.row + 1 < MAX_ROW &&
+            !matrix[nowPos.col][nowPos.row + 1]->sprite &&
+            matrix[nowPos.col][nowPos.row + 1]->isVisited == false)
+        {
+            visit(nowPos.col, nowPos.row + 1);
+        }
+        
+        /* left */
+        if (nowPos.col - 1 >= 0 &&
+            !matrix[nowPos.col - 1][nowPos.row]->sprite &&
+            matrix[nowPos.col - 1][nowPos.row]->isVisited == false)
+        {
+            visit(nowPos.col - 1, nowPos.row);
+        }
+        
+        /* right */
+        if (nowPos.col + 1 < MAX_COL &&
+            !matrix[nowPos.col + 1][nowPos.row]->sprite &&
+            matrix[nowPos.col + 1][nowPos.row]->isVisited == false)
+        {
+            visit(nowPos.col + 1, nowPos.row);
+        }
+    }
+    
+    if (nowPos.col == dest.col && nowPos.row == dest.row)
+    {
+        /**
+         * nowPos 根据predecessor回滚
+         * 把整个路线加入到path中
+         */
+        while (nowPos.predecessor != -1)
+        {
+            path.enqueue(nowPos);
+            nowPos = queue.getByIndex(nowPos.predecessor);
+        }
+        
+        ballGo();
+        ballArrive(start, dest);
+    }
+    
+    path.print();
+    resetIsVisited();
+}
+
+void GameLayer::ballGo()
+{
+    /**
+     * 第一步 path.getByIndex(path.getTail() - 1)
+     * 第二步 path.getByIndex(path.getTail() - 2)
+     *                 ....
+     * 最后一步 path.getByIndex(path.getHead())
+     */
+}
+
+void GameLayer::ballArrive(pathCell start, pathCell dest)
+{
+    if (funnyBall)
+    {
+        Vec2 pos = Vec2(
+                        PADDING_LR + dest.col * 70 + 70 / 2,
+                        PADDING_TB + dest.row * 70 + 70 / 2
+        );
+        funnyBall->setPosition(pos);
+        funnyBall->setLocalZOrder(0);
+        funnyBall->unFunny();
+    }
+    
+    matrix[dest.col][dest.row]->sprite = matrix[start.col][start.row]->sprite;
+    matrix[dest.col][dest.row]->sprite->setCol(dest.col);
+    matrix[dest.col][dest.row]->sprite->setRow(dest.row);
+    
+    funnyBall = nullptr;
+    matrix[start.col][start.row]->sprite = nullptr;
+}
+
+void GameLayer::resetIsVisited()
+{
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            matrix[i][j]->isVisited = false;
         }
     }
 }

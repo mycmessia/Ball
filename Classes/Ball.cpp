@@ -10,6 +10,7 @@
 
 #include "cocos2d.h"
 #include "config.h"
+#include "Queue.h"
 #include "Ball.h"
 
 USING_NS_CC;
@@ -156,4 +157,13 @@ void Ball::funny()
 void Ball::unFunny()
 {
     this->removeChildByTag(EYE_TAG);
+}
+
+void Ball::goToDest(Queue &path, pathCell &start, pathCell &dest)
+{
+    while (!path.isEmpty())
+    {
+        pathCell p = path.dequeue();
+        log("path col %d row %d\n", p.col, p.row);
+    }
 }
