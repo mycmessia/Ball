@@ -6,6 +6,7 @@
 //
 //
 #include <string>
+#include <cmath>
 #include <ctime>
 
 #include "cocos2d.h"
@@ -46,8 +47,8 @@ bool GameLayer::init()
     this->addChild(grade);
     
     // 分数Label
-    auto gradeLabel = LabelTTF::create("999", "Arial", 50);
-    gradeLabel->setColor(Color3B(0, 0, 0));
+    auto gradeLabel = Label::createWithBMFont("numbers.fnt", "123");
+    gradeLabel->setAnchorPoint(Vec2::ZERO);
     gradeLabel->setPosition(Vec2(100, GT.getBaseY() - 120));
     this->addChild(gradeLabel, 0, GRADE_LABEL_TAG);
     
@@ -74,8 +75,6 @@ bool GameLayer::init()
     board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
     this->addChild(board, 0, BOARD_TAG);
     
-//    createRects();
-    
     initBeginBalls();
     
     EventDispatcher *eventDispatcher = Director::getInstance()->getEventDispatcher();
@@ -89,6 +88,19 @@ bool GameLayer::init()
     this->setScale(GT.getScaleRatio());
     
     return true;
+}
+
+void GameLayer::onExit()
+{
+    Layer::onExit();
+    
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            delete matrix[i][j];
+        }
+    }
 }
 
 void GameLayer::update()
@@ -115,37 +127,71 @@ bool GameLayer::onTouchBegan(Touch *touch, Event *event)
     touchRow = -1;
     
     auto board = this->getChildByTag(BOARD_TAG);
-    auto location = touch->getLocation();
-    touchStart = board->convertToNodeSpace(location);
+    touchStart = touch->getLocation();
+    log("touchStart.x %f\n", touchStart.x);
     
-    touchStart.x -= PADDING_LR;
-    touchStart.y -= PADDING_TB;
+    auto touchBoardPos = board->convertToNodeSpace(touchStart);
+    log("touchBoardPos.x %f\n", touchBoardPos.x);
+    
+    touchBoardPos.x -= PADDING_LR;
+    touchBoardPos.y -= PADDING_TB;
     
     Size size = Size(Vec2(70, 70));
-    touchRow = touchStart.y / size.height;
-    touchCol = touchStart.x / size.width;
+    touchRow = touchBoardPos.y / size.height;
+    touchCol = touchBoardPos.x / size.width;
 
     if (touchRow >= MAX_ROW || touchCol >= MAX_COL ||
-        touchStart.x < 0 || touchStart.y < 0)
+        touchBoardPos.x < 0 || touchBoardPos.y < 0)
     {
         touchRow = -1;
         touchCol = -1;
     }
-    
-//    log("touchRow %d\n", touchRow);
-//    log("touchCol %d\n", touchCol);
     
     return true;
 }
 
 void GameLayer::onTouchMoved(Touch *touch, Event *event)
 {
+    auto touchMove = touch->getLocation();
     
+    log("touchMove.x - touchStart.x: %f\n", touchMove.x - touchStart.x);
+    log("touchMove.y - touchStart.y: %f\n", touchMove.y - touchStart.y);
+    
+    if (abs(touchMove.x - touchStart.x) > GT.getMoveDis() ||
+        abs(touchMove.y - touchStart.y) > GT.getMoveDis())
+    {
+        touchRow = -1;
+        touchCol = -1;
+    }
 }
 
 void GameLayer::onTouchEnded(Touch *touch, Event *event)
 {
+    log("touchRow %d\n", touchRow);
+    log("touchCol %d\n", touchCol);
     
+    if (touchRow != -1 && touchCol != -1)
+    {
+        // 如果点击空位置，且已经有funnyBall
+        if (!matrix[touchCol][touchRow]->sprite && funnyBall)
+        {
+            // funnyBall寻路
+        }
+        else if (matrix[touchCol][touchRow]->sprite)
+        {
+            if (funnyBall)
+            {
+                funnyBall->setLocalZOrder(0);
+                funnyBall->unFunny();
+            }
+            
+            funnyBall = matrix[touchCol][touchRow]->sprite;
+            funnyBall->setLocalZOrder(9);
+            funnyBall->setCol(touchCol);
+            funnyBall->setRow(touchRow);
+            funnyBall->funny();
+        }
+    }
 }
 
 void GameLayer::pauseCallBack(Ref *pSender)
@@ -159,30 +205,6 @@ void GameLayer::pauseCallBack(Ref *pSender)
     
     scene->addChild(layer, GT.getMaxZOrder(), PAUSE_LAYER);
     
-}
-
-void GameLayer::createRects()
-{
-    auto board = this->getChildByTag(BOARD_TAG);
-    auto boardPos = board->getPosition();
-    auto batchNode = SpriteBatchNode::create(s_repeat_images, MAX_ROW * MAX_COL * 4);
-    batchNode->setAnchorPoint(Vec2::ZERO);
-    batchNode->setPosition(Vec2::ZERO);
-    board->addChild(batchNode);
-    
-    for (int i = 0; i < MAX_COL; i++)
-    {
-        for (int j = 0; j < MAX_ROW; j++)
-        {
-            auto rect = Sprite::createWithTexture(batchNode->getTexture(), Rect(0, 0, 80, 80));
-            Size size = rect->getContentSize();
-            rect->setPosition(Vec2(
-                PADDING_LR + i * size.width + size.width / 2,
-                PADDING_TB + j * size.height + size.height / 2
-            ));
-            batchNode->addChild(rect);
-        }
-    }
 }
 
 void GameLayer::initBeginBalls()

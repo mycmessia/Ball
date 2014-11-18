@@ -32,7 +32,7 @@ private:
     mPointer matrix[MAX_COL][MAX_ROW];
     
     bool isCanTouch = true;
-    Ball *FunnyBall = nullptr;
+    Ball *funnyBall = nullptr;
     
     cocos2d::Vec2 touchStart;
     int touchCol = -1;
@@ -41,11 +41,11 @@ private:
 public:
     virtual bool init();
     
+    void onExit();
+    
     void update();
     
     void pauseCallBack(cocos2d::Ref* pSender);
-    
-    void createRects();         // 创建底板
     
     void initBeginBalls();      // 创建一上来就有的球
     

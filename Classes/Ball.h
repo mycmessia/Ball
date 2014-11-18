@@ -25,7 +25,7 @@ enum color
 class Ball : public cocos2d::Sprite
 {
 private:
-    int EYE_TAG;
+    int EYE_TAG = 0;
     
     color _color;
     int _col;
@@ -51,6 +51,9 @@ public:
     
     static Ball *create();
     static Ball *create(const color ballColor);
+    
+    void funny();
+    void unFunny();
 };
 
 #endif /* defined(__Ball__Ball__) */

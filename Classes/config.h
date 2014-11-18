@@ -52,6 +52,7 @@ namespace gameConfig {
     #define s_restart_btn_a "restart_btn_active.png"
     #define s_go_home_btn   "go_home_btn.png"
     #define s_go_home_btn_a "go_home_btn_active.png"
+    #define s_eye           "eye.png"
     
     #define s_blue_ball     "blue_ball.png"
     #define s_yellow_ball   "yellow_ball.png"

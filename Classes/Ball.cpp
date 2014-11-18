@@ -145,3 +145,15 @@ bool Ball::init(const color ballColor)
     return initWithSpriteFrame(frame);
 }
 
+void Ball::funny()
+{
+    auto eye = Sprite::createWithSpriteFrameName(s_eye);
+    eye->setAnchorPoint(Vec2::ZERO);
+    eye->setPosition(Vec2::ZERO);
+    this->addChild(eye, 0, EYE_TAG);
+}
+
+void Ball::unFunny()
+{
+    this->removeChildByTag(EYE_TAG);
+}
