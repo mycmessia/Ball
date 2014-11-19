@@ -132,7 +132,7 @@ void WelcomeLayer::startCallBack(Ref *pSender)
     auto layer = GameLayer::create();
     scene->addChild(layer, 0, GAME_LAYER);
     
-    auto replaceAni = TransitionShrinkGrow::create(0.5f, scene);
+    auto replaceAni = TransitionTurnOffTiles::create(0.5f, scene);
     
     Director::getInstance()->replaceScene(replaceAni);
 }

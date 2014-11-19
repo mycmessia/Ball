@@ -5,6 +5,7 @@
 //  Created by meiyuchen on 14-11-12.
 //
 //
+#include <sstream>
 #include <string>
 #include <cmath>
 #include <ctime>
@@ -32,51 +33,19 @@ bool GameLayer::init()
         return false;
     }
     
+    touchCol = -1;
+    touchRow = -1;
+    grade = 0;
+    
     MENU_TAG = getUniqueTag();
     BOARD_TAG = getUniqueTag();
     GRADE_LABEL_TAG = getUniqueTag();
     
-    auto bg = Sprite::create(s_background);
-    bg->setAnchorPoint(Vec2::ZERO);
-    bg->setPosition(Vec2::ZERO);
-    this->addChild(bg);
-    
-    // 分数图片
-    auto grade = Sprite::createWithSpriteFrameName(s_grade_txt);
-    grade->setAnchorPoint(Vec2::ZERO);
-    grade->setPosition(Vec2(40, GT.getBaseY() - 70));
-    this->addChild(grade);
-    
-    // 分数Label
-    auto gradeLabel = Label::createWithBMFont("numbers.fnt", "123");
-    gradeLabel->setAnchorPoint(Vec2::ZERO);
-    gradeLabel->setPosition(Vec2(100, GT.getBaseY() - 120));
-    this->addChild(gradeLabel, 0, GRADE_LABEL_TAG);
-    
-    // 下回出现
-    auto next = Sprite::createWithSpriteFrameName(s_next_txt);
-    next->setAnchorPoint(Vec2::ZERO);
-    next->setPosition(Vec2(320, GT.getBaseY() - 70));
-    this->addChild(next);
-    
-    // 暂停按钮
-    auto pauseSprite = Sprite::createWithSpriteFrameName(s_pause_btn);
-    auto pauseSpriteActive = Sprite::createWithSpriteFrameName(s_pause_btn_a);
-    auto pauseItem = MenuItemSprite::create(pauseSprite, pauseSpriteActive,
-                                           CC_CALLBACK_1(GameLayer::pauseCallBack, this));
-	pauseItem->setAnchorPoint(Vec2::ZERO);
-    pauseItem->setPosition(Vec2(GT.getDesignSize().width - 90, GT.getBaseY() - 90));
-    
-    auto menu = Menu::create(pauseItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 0, MENU_TAG);
-    
-    auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(0, 0, 584, 732));
-    board->setContentSize(Size(584, 732));
-    board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
-    this->addChild(board, 0, BOARD_TAG);
+    createUI();
     
     initBeginBalls();
+    
+    showNextBalls();
     
     EventDispatcher *eventDispatcher = Director::getInstance()->getEventDispatcher();
     auto listener = EventListenerTouchOneByOne::create();
@@ -118,7 +87,8 @@ void GameLayer::update()
                 return;
             }
         }
-    }}
+    }
+}
 
 bool GameLayer::onTouchBegan(Touch *touch, Event *event)
 {
@@ -215,6 +185,50 @@ void GameLayer::pauseCallBack(Ref *pSender)
     
     scene->addChild(layer, GT.getMaxZOrder(), PAUSE_LAYER);
     
+}
+
+void GameLayer::createUI()
+{
+    auto bg = Sprite::create(s_background);
+    bg->setAnchorPoint(Vec2::ZERO);
+    bg->setPosition(Vec2::ZERO);
+    this->addChild(bg);
+    
+    // 分数图片
+    auto gradeImg = Sprite::createWithSpriteFrameName(s_grade_txt);
+    gradeImg->setAnchorPoint(Vec2::ZERO);
+    gradeImg->setPosition(Vec2(40, GT.getBaseY() - 70));
+    this->addChild(gradeImg);
+    
+    // 分数Label
+    std::stringstream ss;
+    ss << grade;
+    auto gradeLabel = Label::createWithBMFont("numbers.fnt", ss.str());
+    gradeLabel->setPosition(Vec2(100, GT.getBaseY() - 100));
+    this->addChild(gradeLabel, 0, GRADE_LABEL_TAG);
+    
+    // 下回出现
+    auto next = Sprite::createWithSpriteFrameName(s_next_txt);
+    next->setAnchorPoint(Vec2::ZERO);
+    next->setPosition(Vec2(320, GT.getBaseY() - 70));
+    this->addChild(next);
+    
+    // 暂停按钮
+    auto pauseSprite = Sprite::createWithSpriteFrameName(s_pause_btn);
+    auto pauseSpriteActive = Sprite::createWithSpriteFrameName(s_pause_btn_a);
+    auto pauseItem = MenuItemSprite::create(pauseSprite, pauseSpriteActive,
+                                            CC_CALLBACK_1(GameLayer::pauseCallBack, this));
+	pauseItem->setAnchorPoint(Vec2::ZERO);
+    pauseItem->setPosition(Vec2(GT.getDesignSize().width - 90, GT.getBaseY() - 90));
+    
+    auto menu = Menu::create(pauseItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+    this->addChild(menu, 0, MENU_TAG);
+    
+    auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(0, 0, 584, 732));
+    board->setContentSize(Size(584, 732));
+    board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
+    this->addChild(board, 0, BOARD_TAG);
 }
 
 void GameLayer::initBeginBalls()
@@ -333,7 +347,6 @@ void GameLayer::searchPath(pathCell start, pathCell dest)
         ballArrive(start, dest);
     }
     
-    path.print();
     resetIsVisited();
 }
 
@@ -366,6 +379,127 @@ void GameLayer::ballArrive(pathCell start, pathCell dest)
     
     funnyBall = nullptr;
     matrix[start.col][start.row]->sprite = nullptr;
+    
+    checkAllDirections(dest.col, dest.row);
+    
+    if (isGameOver())
+    {
+        handleGameOver();
+    }
+    else
+    {
+        addNextBalls();
+        
+        showNextBalls();
+    }
+}
+
+bool GameLayer::isCanAdd(int col, int row)
+{
+    std::vector<mPointer>::iterator it;
+    for (it = removeList.begin(); it != removeList.end(); it++)
+    {
+        if ((*it)->sprite->getCol() == col &&
+            (*it)->sprite->getRow() == row)
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+void GameLayer::checkHorizontal(int col, int row)
+{
+    int oldLength = removeList.size();
+    int sum = 1;
+    color ballColor = matrix[col][row]->sprite->getColor();
+    
+    if (isCanAdd(col, row))
+    {
+        removeList.push_back(matrix[col][row]);
+    }
+    
+    /* left */
+    int newCol = col - 1;
+    while (newCol >= 0 &&
+           matrix[newCol][row]->sprite &&
+           matrix[newCol][row]->sprite->getColor() == ballColor)
+    {
+        if (isCanAdd(newCol, row))
+        {
+            removeList.push_back(matrix[newCol][row]);
+        }
+        
+        sum++;
+        newCol--;
+        
+        log("left sum++\n");
+    }
+    
+    /* right */
+    newCol = col + 1;
+    while (newCol < MAX_COL &&
+           matrix[newCol][row]->sprite &&
+           matrix[newCol][row]->sprite->getColor() == ballColor)
+    {
+        if (isCanAdd(newCol, row))
+        {
+            removeList.push_back(matrix[newCol][row]);
+        }
+        
+        sum++;
+        newCol++;
+        
+        log("right sum++");
+    }
+    
+    log("sum remove ball: %d", sum);
+    
+    // 把removeList列表复原
+    if (sum < NUM_CAN_REMOVE)
+    {
+        removeList.erase(removeList.begin() + oldLength, removeList.begin() + removeList.size());
+    }
+}
+
+void GameLayer::checkAllDirections(int col, int row)
+{
+    checkHorizontal(col, row);
+    
+    setGrade();
+    
+    removeMatrixCells();
+}
+
+void GameLayer::setGrade()
+{
+    int size = removeList.size();
+    
+    for (int i = 0; i < size; i++)
+    {
+        grade += size;
+    }
+    
+    std::stringstream ss;
+    ss << grade;
+    auto gradeLabel = (Label *)this->getChildByTag(GRADE_LABEL_TAG);
+    gradeLabel->setString(ss.str());
+}
+
+void GameLayer::removeMatrixCells()
+{
+    if (removeList.size())
+    {
+        std::vector<mPointer>::iterator it;
+        for (it = removeList.begin(); it != removeList.end(); it++)
+        {
+            (*it)->sprite->removeFromParent();
+            (*it)->sprite = nullptr;
+        }
+        
+        removeList.clear();
+    }
 }
 
 void GameLayer::resetIsVisited()
@@ -377,4 +511,89 @@ void GameLayer::resetIsVisited()
             matrix[i][j]->isVisited = false;
         }
     }
+}
+
+void GameLayer::showNextBalls()
+{
+    if (nextList.size())
+    {
+        std::vector<Ball *>::iterator it;
+        for (it = nextList.begin(); it != nextList.end(); it++)
+        {
+            (*it)->removeFromParent();
+        }
+        
+        nextList.clear();
+    }
+    
+    for (int i = 0; i < NEW_BALLS_COUNT; i++)
+    {
+        auto nextBall = Ball::create();
+        nextBall->setPosition(Vec2(340 + i * nextBall->getContentSize().width, GT.getBaseY() - 120));
+        this->addChild(nextBall);
+        
+        nextList.push_back(nextBall);
+    }
+}
+
+void GameLayer::addNextBalls()
+{
+    int col, row;
+    std::vector<pos> posList;
+    
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            if (!matrix[i][j]->sprite)
+            {
+                pos mPos = {i, j};
+                posList.push_back(mPos);
+            }
+        }
+    }
+    
+    for (int i = 0; i < NEW_BALLS_COUNT; i++)
+    {
+        int n = CCRANDOM_0_1() * posList.size();
+        
+        col = posList[n].col;
+        row = posList[n].row;
+        
+        matrix[col][row]->sprite = Ball::create(nextList[i]->getColor());
+        matrix[col][row]->sprite->setCol(col);
+        matrix[col][row]->sprite->setRow(row);
+        matrix[col][row]->sprite->setPosition(Vec2(
+            PADDING_LR + col * 70 + 70 / 2,
+            PADDING_TB + row * 70 + 70 / 2
+        ));
+        this->getChildByTag(BOARD_TAG)->addChild(matrix[col][row]->sprite);
+        
+        posList.erase(posList.begin() + n);
+        
+        checkAllDirections(col, row);
+    }
+}
+
+bool GameLayer::isGameOver()
+{
+    int cellCount = 0;
+    
+    for (int i = 0; i < MAX_COL; i++)
+    {
+        for (int j = 0; j < MAX_ROW; j++)
+        {
+            if (!matrix[i][j]->sprite)
+                cellCount++;
+            
+            if (cellCount >= NEW_BALLS_COUNT)
+                return false;
+        }
+    }
+    
+    return true;
+}
+
+void GameLayer::handleGameOver()
+{
 }

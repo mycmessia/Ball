@@ -1,15 +1,15 @@
-info face="Font" size=9 bold=0 italic=0 charset="" unicode=0 stretchH=60 smooth=0 aa=0 padding=0,0,0,0 spacing=1,1
-common lineHeight=9 base=9 scaleW=332 scaleH=60 pages=1 packed=0
+info face="Font" size=9 bold=0 italic=0 charset="" unicode=0 stretchH=45 smooth=0 aa=0 padding=0,0,0,0 spacing=1,1
+common lineHeight=9 base=9 scaleW=332 scaleH=45 pages=1 packed=0
 page id=0 file="numbers.png"
 chars count=10
-char id=48 x=290 y=0 width=34 height=60 xoffset=0 yoffset=0 xadvance=34 page=0 chnl=0
-char id=49 x=6 y=0 width=22 height=60 xoffset=100 yoffset=0 xadvance=22 page=0 chnl=0
-char id=50 x=31 y=0 width=34 height=60 xoffset=0 yoffset=0 xadvance=34 page=0 chnl=0
-char id=51 x=67 y=0 width=26 height=60 xoffset=0 yoffset=0 xadvance=26 page=0 chnl=0
-char id=52 x=92 y=0 width=34 height=60 xoffset=0 yoffset=0 xadvance=34 page=0 chnl=0
-char id=53 x=127 y=0 width=28 height=60 xoffset=0 yoffset=0 xadvance=28 page=0 chnl=0
-char id=54 x=155 y=0 width=34 height=60 xoffset=0 yoffset=0 xadvance=34 page=0 chnl=0
-char id=55 x=188 y=0 width=32 height=60 xoffset=0 yoffset=0 xadvance=32 page=0 chnl=0
-char id=56 x=220 y=0 width=33 height=60 xoffset=0 yoffset=0 xadvance=33 page=0 chnl=0
-char id=57 x=253 y=0 width=35 height=60 xoffset=0 yoffset=0 xadvance=35 page=0 chnl=0
+char id=48 x=296 y=0 width=34 height=45 xoffset=0 yoffset=0 xadvance=34 page=0 chnl=0
+char id=49 x=0 y=0 width=17 height=45 xoffset=0 yoffset=0 xadvance=17 page=0 chnl=0
+char id=50 x=18 y=0 width=33 height=45 xoffset=0 yoffset=0 xadvance=33 page=0 chnl=0
+char id=51 x=54 y=0 width=26 height=45 xoffset=0 yoffset=0 xadvance=26 page=0 chnl=0
+char id=52 x=81 y=0 width=33 height=45 xoffset=0 yoffset=0 xadvance=33 page=0 chnl=0
+char id=53 x=119 y=0 width=29 height=45 xoffset=0 yoffset=0 xadvance=29 page=0 chnl=0
+char id=54 x=151 y=0 width=36 height=45 xoffset=0 yoffset=0 xadvance=36 page=0 chnl=0
+char id=55 x=188 y=0 width=32 height=45 xoffset=0 yoffset=0 xadvance=32 page=0 chnl=0
+char id=56 x=224 y=0 width=33 height=45 xoffset=0 yoffset=0 xadvance=33 page=0 chnl=0
+char id=57 x=259 y=0 width=35 height=45 xoffset=0 yoffset=0 xadvance=35 page=0 chnl=0
 kernings count=-1

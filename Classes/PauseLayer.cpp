@@ -127,7 +127,7 @@ void PauseLayer::goHomeCallBack(Ref *pSender)
     auto layer = WelcomeLayer::create();
     scene->addChild(layer, 0, WELCOME_LAYER);
     
-    auto replaceAni = TransitionShrinkGrow::create(0.5f, scene);
+    auto replaceAni = TransitionTurnOffTiles::create(0.5f, scene);
     
     Director::getInstance()->replaceScene(replaceAni);
 }

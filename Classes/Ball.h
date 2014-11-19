@@ -54,8 +54,6 @@ public:
     
     void funny();
     void unFunny();
-    
-    void goToDest(Queue &path, pathCell &start, pathCell &dest);
 };
 
 #endif /* defined(__Ball__Ball__) */

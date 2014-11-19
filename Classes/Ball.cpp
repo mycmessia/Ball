@@ -55,6 +55,8 @@ std::string Ball::getBallFrame()
     std::string frameName;
     color ballColor = getRandomColor(); // 随机数
     
+    setColor(ballColor);
+    
     switch (ballColor)
     {
         case blue:
@@ -79,6 +81,8 @@ std::string Ball::getBallFrame()
 std::string Ball::getBallFrame(const color ballColor)
 {
     std::string frameName;
+    
+    setColor(ballColor);
     
     switch (ballColor)
     {
@@ -157,13 +161,4 @@ void Ball::funny()
 void Ball::unFunny()
 {
     this->removeChildByTag(EYE_TAG);
-}
-
-void Ball::goToDest(Queue &path, pathCell &start, pathCell &dest)
-{
-    while (!path.isEmpty())
-    {
-        pathCell p = path.dequeue();
-        log("path col %d row %d\n", p.col, p.row);
-    }
 }
