@@ -29,6 +29,8 @@ typedef matrixCell *mPointer;
 class GameLayer: public BaseLayer
 {
 private:
+    static const int MCELL_WIDTH = 70;
+    static const int MCELL_HEIGHT = 70;
     static const int MAX_COL = 7;
     static const int MAX_ROW = 9;
     static const int PADDING_LR = 48;
@@ -75,8 +77,8 @@ public:
     void searchPath(pathCell start, pathCell dest);
     void resetIsVisited();
     
-    void ballGo();
-    void ballArrive(pathCell start, pathCell dest);
+    void ballGo(const pathCell& start, const pathCell& dest);
+    void ballArrive(const pathCell& start, const pathCell& dest);
     
     bool isCanAdd(int col, int row);
     void checkAllDirections(int col, int row);

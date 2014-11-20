@@ -20,7 +20,9 @@ public:
     
     static cocos2d::Scene *createScene();
 
-    virtual bool init();  
+    virtual bool init();
+    
+    void createBallAni();
     
     void startCallBack(cocos2d::Ref* pSender);
     

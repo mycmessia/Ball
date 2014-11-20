@@ -34,8 +34,6 @@ void GameTools::init()
     setBaseY(BASE_Y);
     
     addImageCache();
-    
-    srand((unsigned)time(nullptr));
 }
 
 Size GameTools::getWinSize() { return WIN_SIZE; }

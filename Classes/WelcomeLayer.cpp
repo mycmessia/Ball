@@ -124,6 +124,11 @@ void WelcomeLayer::onTouchEnded(Touch *touch, Event *event)
     
 }
 
+void WelcomeLayer::createBallAni()
+{
+    
+}
+
 void WelcomeLayer::startCallBack(Ref *pSender)
 {
     CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(s_btn_click);

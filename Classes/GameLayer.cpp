@@ -41,6 +41,8 @@ bool GameLayer::init()
     BOARD_TAG = getUniqueTag();
     GRADE_LABEL_TAG = getUniqueTag();
     
+    srand((unsigned)time(nullptr));
+    
     createUI();
     
     initBeginBalls();
@@ -99,15 +101,13 @@ bool GameLayer::onTouchBegan(Touch *touch, Event *event)
     
     auto board = this->getChildByTag(BOARD_TAG);
     touchStart = touch->getLocation();
-//    log("touchStart.x %f\n", touchStart.x);
     
     auto touchBoardPos = board->convertToNodeSpace(touchStart);
-//    log("touchBoardPos.x %f\n", touchBoardPos.x);
     
     touchBoardPos.x -= PADDING_LR;
     touchBoardPos.y -= PADDING_TB;
     
-    Size size = Size(Vec2(70, 70));
+    Size size = Size(Vec2(MCELL_WIDTH, MCELL_HEIGHT));
     touchRow = touchBoardPos.y / size.height;
     touchCol = touchBoardPos.x / size.width;
 
@@ -125,9 +125,6 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 {
     auto touchMove = touch->getLocation();
     
-//    log("touchMove.x - touchStart.x: %f\n", touchMove.x - touchStart.x);
-//    log("touchMove.y - touchStart.y: %f\n", touchMove.y - touchStart.y);
-    
     if (abs(touchMove.x - touchStart.x) > GT.getMoveDis() ||
         abs(touchMove.y - touchStart.y) > GT.getMoveDis())
     {
@@ -138,22 +135,14 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 
 void GameLayer::onTouchEnded(Touch *touch, Event *event)
 {
-//    log("touchRow %d\n", touchRow);
-//    log("touchCol %d\n", touchCol);
-    
     if (touchRow != -1 && touchCol != -1)
     {
         // 如果点击空位置，且已经有funnyBall
         if (!matrix[touchCol][touchRow]->sprite && funnyBall)
         {
-            log("begin search path==========\n");
-            
             // funnyBall寻路
             pathCell start = {funnyBall->getCol(), funnyBall->getRow(), -1};
             pathCell dest = {touchCol, touchRow, -1};
-            
-            log("start col %d row %d\n", start.col, start.row);
-            log("dest col %d row %d\n", dest.col, dest.row);
             
             searchPath(start, dest);
         }
@@ -248,7 +237,7 @@ void GameLayer::initBeginBalls()
             if(n < 2)
             {
                 auto ball = Ball::create();
-                Size size = Size(Vec2(70, 70));
+                Size size = Size(Vec2(MCELL_WIDTH, MCELL_HEIGHT));
                 ball->setPosition(Vec2(
                     PADDING_LR + i * size.width + size.width / 2,
                     PADDING_TB + j * size.height + size.height / 2
@@ -343,14 +332,14 @@ void GameLayer::searchPath(pathCell start, pathCell dest)
             nowPos = queue.getByIndex(nowPos.predecessor);
         }
         
-        ballGo();
-        ballArrive(start, dest);
+        ballGo(start, dest);
+//        ballArrive(start, dest);
     }
     
     resetIsVisited();
 }
 
-void GameLayer::ballGo()
+void GameLayer::ballGo(const pathCell& start, const pathCell& dest)
 {
     /**
      * 第一步 path.getByIndex(path.getTail() - 1)
@@ -358,15 +347,31 @@ void GameLayer::ballGo()
      *                 ....
      * 最后一步 path.getByIndex(path.getHead())
      */
+    Vector<FiniteTimeAction *> vecAtion;
+    for (int i = path.getTail() - 1; i >= path.getHead(); i--)
+    {
+        auto jump = JumpTo::create(0.2f, Vec2(
+            PADDING_LR + path.getByIndex(i).col * MCELL_WIDTH + MCELL_WIDTH / 2,
+            PADDING_TB + path.getByIndex(i).row * MCELL_HEIGHT + MCELL_HEIGHT / 2
+        ), 40, 1);
+        vecAtion.pushBack(jump);
+    }
+    
+    FiniteTimeAction *callfunc = CallFunc::create(CC_CALLBACK_0(GameLayer::ballArrive, this, start, dest));
+    vecAtion.pushBack(callfunc);
+    
+    auto seq = Sequence::create(vecAtion);
+    
+    funnyBall->runAction(seq);
 }
 
-void GameLayer::ballArrive(pathCell start, pathCell dest)
+void GameLayer::ballArrive(const pathCell& start, const pathCell& dest)
 {
     if (funnyBall)
     {
         Vec2 pos = Vec2(
-                        PADDING_LR + dest.col * 70 + 70 / 2,
-                        PADDING_TB + dest.row * 70 + 70 / 2
+            PADDING_LR + dest.col * MCELL_WIDTH + MCELL_WIDTH / 2,
+            PADDING_TB + dest.row * MCELL_HEIGHT + MCELL_HEIGHT / 2
         );
         funnyBall->setPosition(pos);
         funnyBall->setLocalZOrder(0);
@@ -433,8 +438,6 @@ void GameLayer::checkHorizontal(int col, int row)
         
         sum++;
         newCol--;
-        
-        log("left sum++\n");
     }
     
     /* right */
@@ -450,11 +453,7 @@ void GameLayer::checkHorizontal(int col, int row)
         
         sum++;
         newCol++;
-        
-        log("right sum++");
     }
-    
-    log("sum remove ball: %d", sum);
     
     // 把removeList列表复原
     if (sum < NUM_CAN_REMOVE)
@@ -564,14 +563,18 @@ void GameLayer::addNextBalls()
         matrix[col][row]->sprite->setCol(col);
         matrix[col][row]->sprite->setRow(row);
         matrix[col][row]->sprite->setPosition(Vec2(
-            PADDING_LR + col * 70 + 70 / 2,
-            PADDING_TB + row * 70 + 70 / 2
+            PADDING_LR + col * MCELL_WIDTH + MCELL_WIDTH / 2,
+            PADDING_TB + row * MCELL_HEIGHT + MCELL_HEIGHT / 2
         ));
+        matrix[col][row]->sprite->setOpacity(0);
         this->getChildByTag(BOARD_TAG)->addChild(matrix[col][row]->sprite);
         
         posList.erase(posList.begin() + n);
         
-        checkAllDirections(col, row);
+        matrix[col][row]->sprite->runAction(Sequence::create(
+            FadeIn::create(0.5),
+            CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)), NULL
+        ));
     }
 }
 
