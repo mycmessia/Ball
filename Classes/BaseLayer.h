@@ -14,7 +14,7 @@
 class BaseLayer : public cocos2d::Layer
 {
 private:
-    int m_tagCounter = 0;
+    int m_tagCounter;
     
 public:
     BaseLayer();

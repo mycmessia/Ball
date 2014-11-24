@@ -50,58 +50,14 @@ bool WelcomeLayer::init()
     QUIT_BTN_TAG = getUniqueTag();
     SETTING_BTN_TAG = getUniqueTag();
     RANK_BTN_TAG = getUniqueTag();
-
-    auto bg = Sprite::create(s_background);
-    bg->setAnchorPoint(Vec2::ZERO);
-    bg->setPosition(Vec2::ZERO);
-    this->addChild(bg);
     
-    auto banner = Sprite::createWithSpriteFrameName(s_banner);
-    banner->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 150));
-    this->addChild(banner);
+    createBg();
     
-    auto startBtn = Sprite::createWithSpriteFrameName(s_start_btn);
-    auto startBtnActive = Sprite::createWithSpriteFrameName(s_start_btn_a);
-    auto startItem = MenuItemSprite::create(startBtn, startBtnActive,
-                                            CC_CALLBACK_1(WelcomeLayer::startCallBack, this));
-    startItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 400));
+    createBanner();
     
-    auto introBtn = Sprite::createWithSpriteFrameName(s_intro_btn);
-    auto introBtnActive = Sprite::createWithSpriteFrameName(s_intro_btn_a);
-    auto introItem = MenuItemSprite::create(introBtn, introBtnActive,
-                                            CC_CALLBACK_1(WelcomeLayer::introCallBack, this));
-    introItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 530));
+    createMenu();
     
-    auto quitBtn = Sprite::createWithSpriteFrameName(s_quit_btn);
-    auto quitBtnActive = Sprite::createWithSpriteFrameName(s_quit_btn_a);
-    auto quitItem = MenuItemSprite::create(quitBtn, quitBtnActive,
-                                           CC_CALLBACK_1(WelcomeLayer::quitCallBack, this));
-    quitItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 660));
-    
-    auto settingSprite = Sprite::createWithSpriteFrameName(s_setting_btn);
-    auto settingSpriteActive = Sprite::createWithSpriteFrameName(s_setting_btn_a);
-    auto settingItem = MenuItemSprite::create(settingSprite, settingSpriteActive,
-                                            CC_CALLBACK_1(WelcomeLayer::settingCallBack, this));
-	settingItem->setAnchorPoint(Vec2::ZERO);
-    settingItem->setPosition(Vec2(GT.getDesignSize().width - 100, 30));
-    
-    auto rankSprite = Sprite::createWithSpriteFrameName(s_rank_btn);
-    auto rankSpriteActive = Sprite::createWithSpriteFrameName(s_rank_btn_a);
-    auto rankItem = MenuItemSprite::create(rankSprite, rankSpriteActive,
-                                           CC_CALLBACK_1(WelcomeLayer::rankCallBack, this));
-	rankItem->setAnchorPoint(Vec2::ZERO);
-    rankItem->setPosition(Vec2(GT.getDesignSize().width - 200, 30));
-    
-    auto menu = Menu::create(startItem, introItem, quitItem, settingItem, rankItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 0, MENU_TAG);
-    
-    EventDispatcher *eventDispatcher = Director::getInstance()->getEventDispatcher();
-    auto listener = EventListenerTouchOneByOne::create();
-    listener->onTouchBegan = CC_CALLBACK_2(WelcomeLayer::onTouchBegan, this);
-    listener->onTouchMoved = CC_CALLBACK_2(WelcomeLayer::onTouchMoved, this);
-    listener->onTouchEnded = CC_CALLBACK_2(WelcomeLayer::onTouchEnded, this);
-    eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    addTouchListener();
     
     this->setAnchorPoint(Vec2::ZERO);
     this->setScale(GT.getScaleRatio());
@@ -124,9 +80,68 @@ void WelcomeLayer::onTouchEnded(Touch *touch, Event *event)
     
 }
 
-void WelcomeLayer::createBallAni()
+void WelcomeLayer::createBg()
 {
+    auto bg = Sprite::create(s_background);
+    bg->setAnchorPoint(Vec2::ZERO);
+    bg->setPosition(Vec2::ZERO);
+    this->addChild(bg);
+}
+
+void WelcomeLayer::createBanner()
+{
+    auto banner = Sprite::createWithSpriteFrameName(s_banner);
+    banner->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 150));
+    this->addChild(banner);
+}
+
+void WelcomeLayer::createMenu()
+{
+    auto startBtn = Sprite::createWithSpriteFrameName(s_start_btn);
+    auto startBtnActive = Sprite::createWithSpriteFrameName(s_start_btn_a);
+    auto startItem = MenuItemSprite::create(startBtn, startBtnActive,
+                                            CC_CALLBACK_1(WelcomeLayer::startCallBack, this));
+    startItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 400));
     
+    auto introBtn = Sprite::createWithSpriteFrameName(s_intro_btn);
+    auto introBtnActive = Sprite::createWithSpriteFrameName(s_intro_btn_a);
+    auto introItem = MenuItemSprite::create(introBtn, introBtnActive,
+                                            CC_CALLBACK_1(WelcomeLayer::introCallBack, this));
+    introItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 530));
+    
+    auto quitBtn = Sprite::createWithSpriteFrameName(s_quit_btn);
+    auto quitBtnActive = Sprite::createWithSpriteFrameName(s_quit_btn_a);
+    auto quitItem = MenuItemSprite::create(quitBtn, quitBtnActive,
+                                           CC_CALLBACK_1(WelcomeLayer::quitCallBack, this));
+    quitItem->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 660));
+    
+    auto settingSprite = Sprite::createWithSpriteFrameName(s_setting_btn);
+    auto settingSpriteActive = Sprite::createWithSpriteFrameName(s_setting_btn_a);
+    auto settingItem = MenuItemSprite::create(settingSprite, settingSpriteActive,
+                                              CC_CALLBACK_1(WelcomeLayer::settingCallBack, this));
+	settingItem->setAnchorPoint(Vec2::ZERO);
+    settingItem->setPosition(Vec2(GT.getDesignSize().width - 100, 30));
+    
+    auto rankSprite = Sprite::createWithSpriteFrameName(s_rank_btn);
+    auto rankSpriteActive = Sprite::createWithSpriteFrameName(s_rank_btn_a);
+    auto rankItem = MenuItemSprite::create(rankSprite, rankSpriteActive,
+                                           CC_CALLBACK_1(WelcomeLayer::rankCallBack, this));
+	rankItem->setAnchorPoint(Vec2::ZERO);
+    rankItem->setPosition(Vec2(GT.getDesignSize().width - 200, 30));
+    
+    auto menu = Menu::create(startItem, introItem, quitItem, settingItem, rankItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+    this->addChild(menu, 0, MENU_TAG);
+}
+
+void WelcomeLayer::addTouchListener()
+{
+    EventDispatcher *eventDispatcher = Director::getInstance()->getEventDispatcher();
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->onTouchBegan = CC_CALLBACK_2(WelcomeLayer::onTouchBegan, this);
+    listener->onTouchMoved = CC_CALLBACK_2(WelcomeLayer::onTouchMoved, this);
+    listener->onTouchEnded = CC_CALLBACK_2(WelcomeLayer::onTouchEnded, this);
+    eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 
 void WelcomeLayer::startCallBack(Ref *pSender)

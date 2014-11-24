@@ -12,7 +12,7 @@ USING_NS_CC;
 
 BaseLayer::BaseLayer()
 {
-    
+    m_tagCounter = 0;
 }
 
 BaseLayer::~BaseLayer()

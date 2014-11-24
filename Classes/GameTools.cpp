@@ -16,9 +16,7 @@ GameTools::GameTools() {};
 GameTools::~GameTools() {};
 
 void GameTools::init()
-{
-    MAX_ZORDER = 99;
-    
+{    
     auto director = Director::getInstance();
     
     Size winSize = director->getWinSize();

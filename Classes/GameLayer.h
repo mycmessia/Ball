@@ -64,13 +64,13 @@ public:
     
     void onExit();
     
-    void update();
+    void checkCanTouch(float dt);
     
     void pauseCallBack(cocos2d::Ref* pSender);
     
     void createUI();
     
-    void initBeginBalls();      // 创建一上来就有的球
+    void initBeginBalls();
     
     void visit(int col, int row);
     void cleanPath();
@@ -81,8 +81,13 @@ public:
     void ballArrive(const pathCell& start, const pathCell& dest);
     
     bool isCanAdd(int col, int row);
-    void checkAllDirections(int col, int row);
+    void checkAddBallToRemove(int col, int row);
+    void recoverRemoveList(int sum, int oldLength);
+    
     void checkHorizontal(int col, int row);
+    void checkVertical(int col, int row);
+    void checkAllDirections(int col, int row);
+    
     void removeMatrixCells();
     
     void setGrade();

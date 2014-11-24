@@ -22,17 +22,17 @@ public:
 
     virtual bool init();
     
-    void createBallAni();
-    
     void startCallBack(cocos2d::Ref* pSender);
-    
     void introCallBack(cocos2d::Ref* pSender);
-    
     void quitCallBack(cocos2d::Ref* pSender);
-    
     void settingCallBack(cocos2d::Ref* pSender);
-    
     void rankCallBack(cocos2d::Ref* pSender);
+    
+    void createBg();
+    void createBanner();
+    void createMenu();
+    
+    void addTouchListener();
     
     bool onTouchBegan(cocos2d::Touch *, cocos2d::Event *);
     void onTouchMoved(cocos2d::Touch *, cocos2d::Event *);

@@ -16,11 +16,13 @@ USING_NS_CC;
 class GameTools
 {
 private:
+    constexpr static const double MOVE_DIS = 8.0;
+    
+    static const int MAX_ZORDER = 99;
+    
     Size WIN_SIZE;
     
     Size DESIGN_SIZE;
-    
-    double MOVE_DIS = 8.0;
     
     double SCALE_RATIO;
     
@@ -28,8 +30,6 @@ private:
     
     int TOUCH_PRIORITY_9;
     int TOUCH_PRIORITY_8;
-    
-    int MAX_ZORDER = 99;
     
     long record;
     

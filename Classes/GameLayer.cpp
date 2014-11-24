@@ -59,6 +59,8 @@ bool GameLayer::init()
     this->setAnchorPoint(Vec2::ZERO);
     this->setScale(GT.getScaleRatio());
     
+    this->schedule(schedule_selector(GameLayer::checkCanTouch));
+    
     return true;
 }
 
@@ -75,7 +77,7 @@ void GameLayer::onExit()
     }
 }
 
-void GameLayer::update()
+void GameLayer::checkCanTouch(float dt)
 {
     isCanTouch = true;
     
@@ -123,6 +125,8 @@ bool GameLayer::onTouchBegan(Touch *touch, Event *event)
 
 void GameLayer::onTouchMoved(Touch *touch, Event *event)
 {
+    if (!isCanTouch) return;
+    
     auto touchMove = touch->getLocation();
     
     if (abs(touchMove.x - touchStart.x) > GT.getMoveDis() ||
@@ -135,6 +139,8 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 
 void GameLayer::onTouchEnded(Touch *touch, Event *event)
 {
+    if (!isCanTouch) return;
+    
     if (touchRow != -1 && touchCol != -1)
     {
         // 如果点击空位置，且已经有funnyBall
@@ -214,8 +220,7 @@ void GameLayer::createUI()
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 0, MENU_TAG);
     
-    auto board = Scale9Sprite::create(s_board, Rect(0, 0, 584, 732), Rect(0, 0, 584, 732));
-    board->setContentSize(Size(584, 732));
+    auto board = Sprite::create(s_board);
     board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
     this->addChild(board, 0, BOARD_TAG);
 }
@@ -414,16 +419,29 @@ bool GameLayer::isCanAdd(int col, int row)
     return true;
 }
 
+void GameLayer::checkAddBallToRemove(int col, int row)
+{
+    if (isCanAdd(col, row))
+    {
+        removeList.push_back(matrix[col][row]);
+    }
+}
+
+void GameLayer::recoverRemoveList(int sum, int oldLength)
+{
+    if (sum < NUM_CAN_REMOVE)
+    {
+        removeList.erase(removeList.begin() + oldLength, removeList.begin() + removeList.size());
+    }
+}
+
 void GameLayer::checkHorizontal(int col, int row)
 {
     int oldLength = removeList.size();
     int sum = 1;
     color ballColor = matrix[col][row]->sprite->getColor();
     
-    if (isCanAdd(col, row))
-    {
-        removeList.push_back(matrix[col][row]);
-    }
+    checkAddBallToRemove(col, row);
     
     /* left */
     int newCol = col - 1;
@@ -431,10 +449,7 @@ void GameLayer::checkHorizontal(int col, int row)
            matrix[newCol][row]->sprite &&
            matrix[newCol][row]->sprite->getColor() == ballColor)
     {
-        if (isCanAdd(newCol, row))
-        {
-            removeList.push_back(matrix[newCol][row]);
-        }
+        checkAddBallToRemove(newCol, row);
         
         sum++;
         newCol--;
@@ -446,13 +461,54 @@ void GameLayer::checkHorizontal(int col, int row)
            matrix[newCol][row]->sprite &&
            matrix[newCol][row]->sprite->getColor() == ballColor)
     {
-        if (isCanAdd(newCol, row))
-        {
-            removeList.push_back(matrix[newCol][row]);
-        }
+        checkAddBallToRemove(newCol, row);
         
         sum++;
         newCol++;
+    }
+    
+    recoverRemoveList(sum, oldLength);
+}
+
+void GameLayer::checkVertical(int col, int row)
+{
+    int oldLength = removeList.size();
+    int sum = 1;
+    color ballColor = matrix[col][row]->sprite->getColor();
+    
+    if (isCanAdd(col, row))
+    {
+        removeList.push_back(matrix[col][row]);
+    }
+    
+    /* down */
+    int newRow = row - 1;
+    while (newRow >= 0 &&
+           matrix[col][newRow]->sprite &&
+           matrix[col][newRow]->sprite->getColor() == ballColor)
+    {
+        if (isCanAdd(col, newRow))
+        {
+            removeList.push_back(matrix[col][newRow]);
+        }
+        
+        sum++;
+        newRow--;
+    }
+    
+    /* up */
+    newRow = row + 1;
+    while (newRow < MAX_ROW &&
+           matrix[col][newRow]->sprite &&
+           matrix[col][newRow]->sprite->getColor() == ballColor)
+    {
+        if (isCanAdd(col, newRow))
+        {
+            removeList.push_back(matrix[col][newRow]);
+        }
+        
+        sum++;
+        newRow++;
     }
     
     // 把removeList列表复原
@@ -465,6 +521,7 @@ void GameLayer::checkHorizontal(int col, int row)
 void GameLayer::checkAllDirections(int col, int row)
 {
     checkHorizontal(col, row);
+    checkVertical(col, row);
     
     setGrade();
     
@@ -599,4 +656,5 @@ bool GameLayer::isGameOver()
 
 void GameLayer::handleGameOver()
 {
+    log("game over.\n");
 }
