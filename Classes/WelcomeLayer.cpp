@@ -82,7 +82,7 @@ void WelcomeLayer::onTouchEnded(Touch *touch, Event *event)
 
 void WelcomeLayer::createBg()
 {
-    auto bg = Sprite::create(s_background);
+    auto bg = Sprite::createWithSpriteFrameName(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
@@ -90,9 +90,14 @@ void WelcomeLayer::createBg()
 
 void WelcomeLayer::createBanner()
 {
-    auto banner = Sprite::createWithSpriteFrameName(s_banner);
-    banner->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() - 150));
-    this->addChild(banner);
+    auto sun = Sprite::createWithSpriteFrameName(s_sun);
+    sun->setPosition(Vec2(170, GT.getBaseY() - 160));
+    this->addChild(sun);
+    
+    auto logo = Sprite::createWithSpriteFrameName(s_logo);
+    logo->setScale(0.8f);
+    logo->setPosition(Vec2(430, GT.getBaseY() - 150));
+    this->addChild(logo);
 }
 
 void WelcomeLayer::createMenu()
@@ -120,14 +125,16 @@ void WelcomeLayer::createMenu()
     auto settingItem = MenuItemSprite::create(settingSprite, settingSpriteActive,
                                               CC_CALLBACK_1(WelcomeLayer::settingCallBack, this));
 	settingItem->setAnchorPoint(Vec2::ZERO);
-    settingItem->setPosition(Vec2(GT.getDesignSize().width - 100, 30));
+    settingItem->setScale(0.7f);
+    settingItem->setPosition(Vec2(GT.getDesignSize().width - 100, 20));
     
     auto rankSprite = Sprite::createWithSpriteFrameName(s_rank_btn);
     auto rankSpriteActive = Sprite::createWithSpriteFrameName(s_rank_btn_a);
     auto rankItem = MenuItemSprite::create(rankSprite, rankSpriteActive,
                                            CC_CALLBACK_1(WelcomeLayer::rankCallBack, this));
 	rankItem->setAnchorPoint(Vec2::ZERO);
-    rankItem->setPosition(Vec2(GT.getDesignSize().width - 200, 30));
+    rankItem->setScale(0.7f);
+    rankItem->setPosition(Vec2(GT.getDesignSize().width - 200, 20));
     
     auto menu = Menu::create(startItem, introItem, quitItem, settingItem, rankItem, NULL);
     menu->setPosition(Vec2::ZERO);

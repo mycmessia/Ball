@@ -44,8 +44,8 @@ private:
     
     mPointer matrix[MAX_COL][MAX_ROW];
     
-    bool isCanTouch = true;
-    Ball *funnyBall = nullptr;
+    bool _isCanTouch = true;
+    Ball *_funnyBall = nullptr;
     
     cocos2d::Vec2 touchStart;
     int touchCol;
@@ -90,6 +90,7 @@ public:
     
     void removeMatrixCells();
     
+    std::string calcGrade();
     void setGrade();
     
     void showNextBalls();

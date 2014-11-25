@@ -79,7 +79,7 @@ void GameLayer::onExit()
 
 void GameLayer::checkCanTouch(float dt)
 {
-    isCanTouch = true;
+    _isCanTouch = true;
     
     for (int i = 0; i < MAX_COL; i++)
     {
@@ -87,7 +87,7 @@ void GameLayer::checkCanTouch(float dt)
         {
             if (matrix[i][j]->sprite && matrix[i][j]->sprite->getNumberOfRunningActions() > 0)
             {
-                isCanTouch = false;
+                _isCanTouch = false;
                 return;
             }
         }
@@ -96,7 +96,7 @@ void GameLayer::checkCanTouch(float dt)
 
 bool GameLayer::onTouchBegan(Touch *touch, Event *event)
 {
-    if (!isCanTouch) return false;
+    if (!_isCanTouch) return false;
     
     touchCol = -1;
     touchRow = -1;
@@ -125,7 +125,7 @@ bool GameLayer::onTouchBegan(Touch *touch, Event *event)
 
 void GameLayer::onTouchMoved(Touch *touch, Event *event)
 {
-    if (!isCanTouch) return;
+    if (!_isCanTouch) return;
     
     auto touchMove = touch->getLocation();
     
@@ -139,32 +139,32 @@ void GameLayer::onTouchMoved(Touch *touch, Event *event)
 
 void GameLayer::onTouchEnded(Touch *touch, Event *event)
 {
-    if (!isCanTouch) return;
+    if (!_isCanTouch) return;
     
     if (touchRow != -1 && touchCol != -1)
     {
         // 如果点击空位置，且已经有funnyBall
-        if (!matrix[touchCol][touchRow]->sprite && funnyBall)
+        if (!matrix[touchCol][touchRow]->sprite && _funnyBall)
         {
             // funnyBall寻路
-            pathCell start = {funnyBall->getCol(), funnyBall->getRow(), -1};
+            pathCell start = {_funnyBall->getCol(), _funnyBall->getRow(), -1};
             pathCell dest = {touchCol, touchRow, -1};
             
             searchPath(start, dest);
         }
         else if (matrix[touchCol][touchRow]->sprite)
         {
-            if (funnyBall)
+            if (_funnyBall)
             {
-                funnyBall->setLocalZOrder(0);
-                funnyBall->unFunny();
+                _funnyBall->setLocalZOrder(0);
+                _funnyBall->unFunny();
             }
             
-            funnyBall = matrix[touchCol][touchRow]->sprite;
-            funnyBall->setLocalZOrder(9);
-            funnyBall->setCol(touchCol);
-            funnyBall->setRow(touchRow);
-            funnyBall->funny();
+            _funnyBall = matrix[touchCol][touchRow]->sprite;
+            _funnyBall->setLocalZOrder(9);
+            _funnyBall->setCol(touchCol);
+            _funnyBall->setRow(touchRow);
+            _funnyBall->funny();
         }
     }
 }
@@ -184,7 +184,7 @@ void GameLayer::pauseCallBack(Ref *pSender)
 
 void GameLayer::createUI()
 {
-    auto bg = Sprite::create(s_background);
+    auto bg = Sprite::createWithSpriteFrameName(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
@@ -198,7 +198,7 @@ void GameLayer::createUI()
     // 分数Label
     std::stringstream ss;
     ss << grade;
-    auto gradeLabel = Label::createWithBMFont("numbers.fnt", ss.str());
+    auto gradeLabel = Label::createWithBMFont(s_number_fnt, ss.str());
     gradeLabel->setPosition(Vec2(100, GT.getBaseY() - 100));
     this->addChild(gradeLabel, 0, GRADE_LABEL_TAG);
     
@@ -213,14 +213,14 @@ void GameLayer::createUI()
     auto pauseSpriteActive = Sprite::createWithSpriteFrameName(s_pause_btn_a);
     auto pauseItem = MenuItemSprite::create(pauseSprite, pauseSpriteActive,
                                             CC_CALLBACK_1(GameLayer::pauseCallBack, this));
-	pauseItem->setAnchorPoint(Vec2::ZERO);
-    pauseItem->setPosition(Vec2(GT.getDesignSize().width - 90, GT.getBaseY() - 90));
+    pauseItem->setScale(0.7f);
+    pauseItem->setPosition(Vec2(GT.getDesignSize().width - 60, GT.getBaseY() - 50));
     
     auto menu = Menu::create(pauseItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 0, MENU_TAG);
     
-    auto board = Sprite::create(s_board);
+    auto board = Sprite::createWithSpriteFrameName(s_board);
     board->setPosition(Vec2(GT.getDesignSize().width / 2, GT.getBaseY() / 2 - GT.getBaseY() / 20));
     this->addChild(board, 0, BOARD_TAG);
 }
@@ -367,27 +367,27 @@ void GameLayer::ballGo(const pathCell& start, const pathCell& dest)
     
     auto seq = Sequence::create(vecAtion);
     
-    funnyBall->runAction(seq);
+    _funnyBall->runAction(seq);
 }
 
 void GameLayer::ballArrive(const pathCell& start, const pathCell& dest)
 {
-    if (funnyBall)
+    if (_funnyBall)
     {
         Vec2 pos = Vec2(
             PADDING_LR + dest.col * MCELL_WIDTH + MCELL_WIDTH / 2,
             PADDING_TB + dest.row * MCELL_HEIGHT + MCELL_HEIGHT / 2
         );
-        funnyBall->setPosition(pos);
-        funnyBall->setLocalZOrder(0);
-        funnyBall->unFunny();
+        _funnyBall->setPosition(pos);
+        _funnyBall->setLocalZOrder(0);
+        _funnyBall->unFunny();
     }
     
     matrix[dest.col][dest.row]->sprite = matrix[start.col][start.row]->sprite;
     matrix[dest.col][dest.row]->sprite->setCol(dest.col);
     matrix[dest.col][dest.row]->sprite->setRow(dest.row);
     
-    funnyBall = nullptr;
+    _funnyBall = nullptr;
     matrix[start.col][start.row]->sprite = nullptr;
     
     checkAllDirections(dest.col, dest.row);
@@ -476,10 +476,7 @@ void GameLayer::checkVertical(int col, int row)
     int sum = 1;
     color ballColor = matrix[col][row]->sprite->getColor();
     
-    if (isCanAdd(col, row))
-    {
-        removeList.push_back(matrix[col][row]);
-    }
+    checkAddBallToRemove(col, row);
     
     /* down */
     int newRow = row - 1;
@@ -487,10 +484,7 @@ void GameLayer::checkVertical(int col, int row)
            matrix[col][newRow]->sprite &&
            matrix[col][newRow]->sprite->getColor() == ballColor)
     {
-        if (isCanAdd(col, newRow))
-        {
-            removeList.push_back(matrix[col][newRow]);
-        }
+        checkAddBallToRemove(col, newRow);
         
         sum++;
         newRow--;
@@ -502,20 +496,13 @@ void GameLayer::checkVertical(int col, int row)
            matrix[col][newRow]->sprite &&
            matrix[col][newRow]->sprite->getColor() == ballColor)
     {
-        if (isCanAdd(col, newRow))
-        {
-            removeList.push_back(matrix[col][newRow]);
-        }
+        checkAddBallToRemove(col, newRow);
         
         sum++;
         newRow++;
     }
     
-    // 把removeList列表复原
-    if (sum < NUM_CAN_REMOVE)
-    {
-        removeList.erase(removeList.begin() + oldLength, removeList.begin() + removeList.size());
-    }
+    recoverRemoveList(sum, oldLength);
 }
 
 void GameLayer::checkAllDirections(int col, int row)
@@ -528,7 +515,7 @@ void GameLayer::checkAllDirections(int col, int row)
     removeMatrixCells();
 }
 
-void GameLayer::setGrade()
+std::string GameLayer::calcGrade()
 {
     int size = removeList.size();
     
@@ -539,8 +526,13 @@ void GameLayer::setGrade()
     
     std::stringstream ss;
     ss << grade;
+    return ss.str();
+}
+
+void GameLayer::setGrade()
+{
     auto gradeLabel = (Label *)this->getChildByTag(GRADE_LABEL_TAG);
-    gradeLabel->setString(ss.str());
+    gradeLabel->setString(calcGrade());
 }
 
 void GameLayer::removeMatrixCells()

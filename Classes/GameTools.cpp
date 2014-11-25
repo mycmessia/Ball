@@ -60,8 +60,11 @@ int GameTools::getMaxZOrder()
 
 void GameTools::addImageCache()
 {
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_main_images_plist, s_main_images);
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_repeat_images_plist, s_repeat_images);
+    FileUtils::getInstance()->addSearchPath(image_search_path);
+    FileUtils::getInstance()->addSearchPath(audio_search_path);
+    FileUtils::getInstance()->addSearchPath(font_search_path);
+    
+    SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_ball_images_plist, s_ball_images);
 }
 
 double GameTools::getMoveDis()
