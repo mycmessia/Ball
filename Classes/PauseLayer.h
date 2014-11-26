@@ -10,15 +10,12 @@
 #define __Ball__PauseLayer__
 
 #include "cocos2d.h"
-#include "BaseLayer.h"
+#include "OverLayer.h"
 
 USING_NS_CC;
 
-class PauseLayer : public BaseLayer
+class PauseLayer : public OverLayer
 {
-private:
-    int BOARD_TAG;
-    
 public:
     PauseLayer();
     ~PauseLayer();
@@ -26,10 +23,6 @@ public:
     bool init();
     
     void resumeCallBack(cocos2d::Ref* pSender);
-    
-    void restartCallBack(cocos2d::Ref* pSender);
-    
-    void goHomeCallBack(cocos2d::Ref* pSender);
     
     bool onTouchBegan(cocos2d::Touch *, cocos2d::Event *);
     void onTouchMoved(cocos2d::Touch *, cocos2d::Event *);

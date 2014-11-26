@@ -53,7 +53,7 @@ color Ball::getRandomColor()
 std::string Ball::getBallFrame()
 {
     std::string frameName;
-    color ballColor = getRandomColor(); // 随机数
+    color ballColor = getRandomColor();
     
     setColor(ballColor);
     

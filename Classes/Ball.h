@@ -41,7 +41,7 @@ public:
     int getCol();
     void setCol(int col);
     
-    color getRandomColor(); // 生成随机颜色
+    color getRandomColor();
     
     virtual bool init();
     virtual bool init(const color ballColor);

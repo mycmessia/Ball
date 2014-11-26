@@ -184,16 +184,19 @@ void GameLayer::pauseCallBack(Ref *pSender)
 
 void GameLayer::createUI()
 {
+    auto bgLayerColor = LayerColor::create(Color4B(140, 207, 243, 255));
+    this->addChild(bgLayerColor);
+    
     auto bg = Sprite::createWithSpriteFrameName(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
     
     // 分数图片
-    auto gradeImg = Sprite::createWithSpriteFrameName(s_grade_txt);
-    gradeImg->setAnchorPoint(Vec2::ZERO);
-    gradeImg->setPosition(Vec2(40, GT.getBaseY() - 70));
-    this->addChild(gradeImg);
+    auto scoreImg = Sprite::createWithSpriteFrameName(s_score_txt);
+    scoreImg->setAnchorPoint(Vec2::ZERO);
+    scoreImg->setPosition(Vec2(40, GT.getBaseY() - 70));
+    this->addChild(scoreImg);
     
     // 分数Label
     std::stringstream ss;
@@ -338,7 +341,6 @@ void GameLayer::searchPath(pathCell start, pathCell dest)
         }
         
         ballGo(start, dest);
-//        ballArrive(start, dest);
     }
     
     resetIsVisited();
@@ -513,6 +515,11 @@ void GameLayer::checkAllDirections(int col, int row)
     setGrade();
     
     removeMatrixCells();
+    
+    if (isGameOver())
+    {
+        handleGameOver();
+    }
 }
 
 std::string GameLayer::calcGrade()
@@ -648,5 +655,12 @@ bool GameLayer::isGameOver()
 
 void GameLayer::handleGameOver()
 {
-    log("game over.\n");
+    USING_NS_GC;
+    
+    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(s_btn_click);
+    
+    auto scene = Director::getInstance()->getRunningScene();
+    auto layer = OverLayer::create();
+    
+    scene->addChild(layer, GT.getMaxZOrder(), OVER_LAYER);
 }

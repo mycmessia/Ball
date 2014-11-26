@@ -29,7 +29,7 @@ public:
     void rankCallBack(cocos2d::Ref* pSender);
     
     void createBg();
-    void createBanner();
+    void createLogo();
     void createMenu();
     
     void addTouchListener();

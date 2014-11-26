@@ -17,7 +17,8 @@ struct pathCell {
     int predecessor;
 };
 
-class Queue {
+class Queue
+{
 private:
     pathCell queue[MAX_CELL];
     int tail = 0;

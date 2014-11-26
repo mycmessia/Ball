@@ -53,7 +53,7 @@ bool WelcomeLayer::init()
     
     createBg();
     
-    createBanner();
+    createLogo();
     
     createMenu();
     
@@ -82,13 +82,16 @@ void WelcomeLayer::onTouchEnded(Touch *touch, Event *event)
 
 void WelcomeLayer::createBg()
 {
+    auto bgLayerColor = LayerColor::create(Color4B(140, 207, 243, 255));
+    this->addChild(bgLayerColor);
+    
     auto bg = Sprite::createWithSpriteFrameName(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
 }
 
-void WelcomeLayer::createBanner()
+void WelcomeLayer::createLogo()
 {
     auto sun = Sprite::createWithSpriteFrameName(s_sun);
     sun->setPosition(Vec2(170, GT.getBaseY() - 160));
@@ -98,6 +101,12 @@ void WelcomeLayer::createBanner()
     logo->setScale(0.8f);
     logo->setPosition(Vec2(430, GT.getBaseY() - 150));
     this->addChild(logo);
+    
+    auto MoveUp = MoveBy::create(0.5f, Vec2(0, 20.0f));
+    auto MoveDown = MoveBy::create(0.5f, Vec2(0, -20.0f));
+    auto seq = Sequence::create(MoveUp, MoveDown, nullptr);
+    auto repeat = RepeatForever::create(seq);
+    logo->runAction(repeat);
 }
 
 void WelcomeLayer::createMenu()
