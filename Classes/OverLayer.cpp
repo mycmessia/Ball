@@ -84,8 +84,7 @@ void OverLayer::restartCallBack(Ref *pSender)
     
     auto scene = Director::getInstance()->getRunningScene();
     
-    scene->removeChildByTag(PAUSE_LAYER);
-    scene->removeChildByTag(OVER_LAYER);
+    this->removeFromParent();
     scene->removeChildByTag(GAME_LAYER);
     auto layer = GameLayer::create();
     scene->addChild(layer, 0, GAME_LAYER);

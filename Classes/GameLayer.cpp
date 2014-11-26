@@ -657,9 +657,10 @@ void GameLayer::handleGameOver()
 {
     USING_NS_GC;
     
-    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(s_btn_click);
-    
     auto scene = Director::getInstance()->getRunningScene();
+    
+    if (scene->getChildByTag(OVER_LAYER))   return;
+    
     auto layer = OverLayer::create();
     
     scene->addChild(layer, GT.getMaxZOrder(), OVER_LAYER);
