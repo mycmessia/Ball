@@ -625,18 +625,19 @@ void GameLayer::addNextBalls()
                 CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)),
                 CallFunc::create(CC_CALLBACK_0(GameLayer::setGrade, this)),
                 CallFunc::create(CC_CALLBACK_0(GameLayer::removeMatrixCells, this)),
+                CallFunc::create(CC_CALLBACK_0(GameLayer::checkGameOver, this)),
                 NULL
             ));
         }
         else
+        {
             matrix[col][row]->sprite->runAction(Sequence::create(
-            FadeIn::create(0.5),
-            CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)),
-            NULL
-        ));
+                FadeIn::create(0.5),
+                CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)),
+                NULL
+            ));
+        }
     }
-    
-    checkGameOver();
 }
 
 bool GameLayer::isGameOver()
@@ -673,6 +674,7 @@ void GameLayer::handleGameOver()
 
 void GameLayer::checkGameOver()
 {
+    log("isGameOver in checkGameOver: %d\n", isGameOver());
     if (isGameOver())
     {
         handleGameOver();
@@ -681,6 +683,7 @@ void GameLayer::checkGameOver()
 
 void GameLayer::checkAddNextBalls()
 {
+    log("isGameOver in checkAddNextBalls: %d\n", isGameOver());
     if (!isGameOver())
     {
         addNextBalls();
