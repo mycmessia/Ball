@@ -355,6 +355,9 @@ void GameLayer::ballGo(const pathCell& start, const pathCell& dest)
      * 最后一步 path.getByIndex(path.getHead())
      */
     Vector<FiniteTimeAction *> vecAtion;
+    
+//    log("steps: %d\n", path.getTail() - path.getHead());
+    
     for (int i = path.getTail() - 1; i >= path.getHead(); i--)
     {
         auto jump = JumpTo::create(0.2f, Vec2(
@@ -398,16 +401,9 @@ void GameLayer::ballArrive(const pathCell& start, const pathCell& dest)
     
     removeMatrixCells();
     
-    if (isGameOver())
-    {
-        handleGameOver();
-    }
-    else
-    {
-        addNextBalls();
-        
-        showNextBalls();
-    }
+    checkGameOver();
+    
+    checkAddNextBalls();
 }
 
 bool GameLayer::isCanAdd(int col, int row)
@@ -622,20 +618,25 @@ void GameLayer::addNextBalls()
         
         posList.erase(posList.begin() + n);
         
-        matrix[col][row]->sprite->runAction(Sequence::create(
+        if (i == NEW_BALLS_COUNT - 1)
+        {
+            matrix[col][row]->sprite->runAction(Sequence::create(
+                FadeIn::create(0.5),
+                CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)),
+                CallFunc::create(CC_CALLBACK_0(GameLayer::setGrade, this)),
+                CallFunc::create(CC_CALLBACK_0(GameLayer::removeMatrixCells, this)),
+                NULL
+            ));
+        }
+        else
+            matrix[col][row]->sprite->runAction(Sequence::create(
             FadeIn::create(0.5),
-            CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)), NULL
+            CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)),
+            NULL
         ));
     }
     
-    setGrade();
-    
-    removeMatrixCells();
-    
-    if (isGameOver())
-    {
-        handleGameOver();
-    }
+    checkGameOver();
 }
 
 bool GameLayer::isGameOver()
@@ -668,4 +669,22 @@ void GameLayer::handleGameOver()
     auto layer = OverLayer::create();
     
     scene->addChild(layer, GT.getMaxZOrder(), OVER_LAYER);
+}
+
+void GameLayer::checkGameOver()
+{
+    if (isGameOver())
+    {
+        handleGameOver();
+    }
+}
+
+void GameLayer::checkAddNextBalls()
+{
+    if (!isGameOver())
+    {
+        addNextBalls();
+        
+        showNextBalls();
+    }
 }

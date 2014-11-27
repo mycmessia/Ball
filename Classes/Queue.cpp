@@ -17,7 +17,7 @@ int Queue::getHead()
 
 int Queue::getTail()
 {
-    return tail;
+    return tail < head ? tail + MAX_CELL : tail;
 }
 
 pathCell Queue::dequeue()
@@ -39,7 +39,7 @@ bool Queue::isEmpty()
 
 pathCell Queue::getByIndex(const unsigned int index)
 {
-    return queue[index];
+    return queue[index % MAX_CELL];
 }
 
 void Queue::print()

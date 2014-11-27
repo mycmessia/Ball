@@ -99,6 +99,9 @@ public:
     bool isGameOver();
     void handleGameOver();
     
+    void checkGameOver();
+    void checkAddNextBalls();
+    
     bool onTouchBegan(cocos2d::Touch *, cocos2d::Event *);
     void onTouchMoved(cocos2d::Touch *, cocos2d::Event *);
     void onTouchEnded(cocos2d::Touch *, cocos2d::Event *);
