@@ -394,6 +394,10 @@ void GameLayer::ballArrive(const pathCell& start, const pathCell& dest)
     
     checkAllDirections(dest.col, dest.row);
     
+    setGrade();
+    
+    removeMatrixCells();
+    
     if (isGameOver())
     {
         handleGameOver();
@@ -511,15 +515,6 @@ void GameLayer::checkAllDirections(int col, int row)
 {
     checkHorizontal(col, row);
     checkVertical(col, row);
-    
-    setGrade();
-    
-    removeMatrixCells();
-    
-    if (isGameOver())
-    {
-        handleGameOver();
-    }
 }
 
 std::string GameLayer::calcGrade()
@@ -631,6 +626,15 @@ void GameLayer::addNextBalls()
             FadeIn::create(0.5),
             CallFunc::create(CC_CALLBACK_0(GameLayer::checkAllDirections, this, col, row)), NULL
         ));
+    }
+    
+    setGrade();
+    
+    removeMatrixCells();
+    
+    if (isGameOver())
+    {
+        handleGameOver();
     }
 }
 

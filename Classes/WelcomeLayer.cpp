@@ -82,10 +82,7 @@ void WelcomeLayer::onTouchEnded(Touch *touch, Event *event)
 
 void WelcomeLayer::createBg()
 {
-    auto bgLayerColor = LayerColor::create(Color4B(140, 207, 243, 255));
-    this->addChild(bgLayerColor);
-    
-    auto bg = Sprite::createWithSpriteFrameName(s_background);
+    Sprite *bg = Sprite::createWithSpriteFrameName(s_background);
     bg->setAnchorPoint(Vec2::ZERO);
     bg->setPosition(Vec2::ZERO);
     this->addChild(bg);
