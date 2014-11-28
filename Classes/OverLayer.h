@@ -16,6 +16,9 @@ USING_NS_CC;
 
 class OverLayer : public AlertLayer
 {
+private:
+    char* s_title;
+    
 public:
     bool init();
     

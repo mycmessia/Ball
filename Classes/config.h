@@ -48,6 +48,7 @@ namespace gameConfig {
     #define s_board         "game_board"
     #define s_alert_board   "alert_board"
     #define s_pause_txt     "txt_pause"
+    #define s_over_txt      "txt_over"
     #define s_resume_btn    "btn_continue"
     #define s_resume_btn_a  "btn_continue_active"
     #define s_restart_btn   "btn_restart"

@@ -17,7 +17,7 @@ USING_NS_GC;
 
 extern GameTools GT;
 
-PauseLayer::PauseLayer ()
+PauseLayer::PauseLayer()
 {
     
 }
@@ -29,12 +29,16 @@ PauseLayer::~PauseLayer()
 
 bool PauseLayer::init()
 {
-    if (!OverLayer::init())
+    if (!AlertLayer::init())
     {
         return false;
     }
     
     auto board = this->getBoard();
+    
+    auto title = Sprite::createWithSpriteFrameName(s_pause_txt);
+    title->setPosition(Vec2(board->getContentSize().width / 2, board->getContentSize().height));
+    board->addChild(title);
     
     // 继续按钮
     auto resumeSprite = Sprite::createWithSpriteFrameName(s_resume_btn);
@@ -45,7 +49,25 @@ bool PauseLayer::init()
     resumeItem->setScale(0.7f);
     resumeItem->setPosition(Vec2(40, 50));
     
-    auto menu = Menu::create(resumeItem, NULL);
+    // 重开按钮
+    auto restartSprite = Sprite::createWithSpriteFrameName(s_restart_btn);
+    auto restartSpriteActive = Sprite::createWithSpriteFrameName(s_restart_btn_a);
+    auto restartItem = MenuItemSprite::create(restartSprite, restartSpriteActive,
+                                              CC_CALLBACK_1(PauseLayer::restartCallBack, this));
+	restartItem->setAnchorPoint(Vec2::ZERO);
+    restartItem->setScale(0.7f);
+    restartItem->setPosition(Vec2(140, 50));
+    
+    // 回首页按钮
+    auto goHomeSprite = Sprite::createWithSpriteFrameName(s_go_home_btn);
+    auto goHomeSpriteActive= Sprite::createWithSpriteFrameName(s_go_home_btn_a);
+    auto goHomeItem = MenuItemSprite::create(goHomeSprite, goHomeSpriteActive,
+                                             CC_CALLBACK_1(PauseLayer::goHomeCallBack, this));
+	goHomeItem->setAnchorPoint(Vec2::ZERO);
+    goHomeItem->setScale(0.7f);
+    goHomeItem->setPosition(Vec2(240, 50));
+    
+    auto menu = Menu::create(resumeItem, restartItem, goHomeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     board->addChild(menu);
     
@@ -81,4 +103,29 @@ void PauseLayer::resumeCallBack(Ref *pSender)
     
     auto scene = Director::getInstance()->getRunningScene();
     scene->removeChildByTag(PAUSE_LAYER);
+}
+
+void PauseLayer::restartCallBack(Ref *pSender)
+{
+    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(s_btn_click);
+    
+    auto scene = Director::getInstance()->getRunningScene();
+    
+    this->removeFromParent();
+    scene->removeChildByTag(GAME_LAYER);
+    auto layer = GameLayer::create();
+    scene->addChild(layer, 0, GAME_LAYER);
+}
+
+void PauseLayer::goHomeCallBack(Ref *pSender)
+{
+    CocosDenshion::SimpleAudioEngine::getInstance()->playEffect(s_btn_click);
+    
+    auto scene = Scene::create();
+    auto layer = WelcomeLayer::create();
+    scene->addChild(layer, 0, WELCOME_LAYER);
+    
+    auto replaceAni = TransitionTurnOffTiles::create(0.5f, scene);
+    
+    Director::getInstance()->replaceScene(replaceAni);
 }

@@ -5,6 +5,7 @@
 //  Created by meiyuchen on 14-11-26.
 //
 //
+#include <string>
 #include "cocos2d.h"
 #include "config.h"
 #include "GameTools.h"
@@ -26,10 +27,10 @@ bool OverLayer::init()
     
     auto board = this->getBoard();
     
-    auto title = Sprite::createWithSpriteFrameName(s_pause_txt);
+    auto title = Sprite::createWithSpriteFrameName(s_over_txt);
     title->setPosition(Vec2(board->getContentSize().width / 2, board->getContentSize().height));
     board->addChild(title);
-    
+
     // 重开按钮
     auto restartSprite = Sprite::createWithSpriteFrameName(s_restart_btn);
     auto restartSpriteActive = Sprite::createWithSpriteFrameName(s_restart_btn_a);
@@ -37,7 +38,7 @@ bool OverLayer::init()
                                               CC_CALLBACK_1(OverLayer::restartCallBack, this));
 	restartItem->setAnchorPoint(Vec2::ZERO);
     restartItem->setScale(0.7f);
-    restartItem->setPosition(Vec2(140, 50));
+    restartItem->setPosition(Vec2(70, 50));
     
     // 回首页按钮
     auto goHomeSprite = Sprite::createWithSpriteFrameName(s_go_home_btn);
@@ -46,7 +47,7 @@ bool OverLayer::init()
                                              CC_CALLBACK_1(OverLayer::goHomeCallBack, this));
 	goHomeItem->setAnchorPoint(Vec2::ZERO);
     goHomeItem->setScale(0.7f);
-    goHomeItem->setPosition(Vec2(240, 50));
+    goHomeItem->setPosition(Vec2(200, 50));
     
     auto menu = Menu::create(restartItem, goHomeItem, NULL);
     menu->setPosition(Vec2::ZERO);

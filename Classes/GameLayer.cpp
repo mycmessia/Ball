@@ -17,6 +17,7 @@
 #include "Queue.h"
 #include "GameLayer.h"
 #include "PauseLayer.h"
+#include "OverLayer.h"
 #include "GameTools.h"
 #include "Ball.h"
 
@@ -356,8 +357,6 @@ void GameLayer::ballGo(const pathCell& start, const pathCell& dest)
      */
     Vector<FiniteTimeAction *> vecAtion;
     
-//    log("steps: %d\n", path.getTail() - path.getHead());
-    
     for (int i = path.getTail() - 1; i >= path.getHead(); i--)
     {
         auto jump = JumpTo::create(0.2f, Vec2(
@@ -674,7 +673,6 @@ void GameLayer::handleGameOver()
 
 void GameLayer::checkGameOver()
 {
-    log("isGameOver in checkGameOver: %d\n", isGameOver());
     if (isGameOver())
     {
         handleGameOver();
@@ -683,7 +681,6 @@ void GameLayer::checkGameOver()
 
 void GameLayer::checkAddNextBalls()
 {
-    log("isGameOver in checkAddNextBalls: %d\n", isGameOver());
     if (!isGameOver())
     {
         addNextBalls();
